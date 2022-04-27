@@ -3,7 +3,6 @@
 namespace App\DTO;
 
 use App\Enum\AccountTypeEnum;
-use App\Enum\CurrencyEnum;
 use App\Enum\TransactionTypeEnum;
 use App\VO\Money;
 
@@ -19,8 +18,6 @@ class TransactionDTO
 
     private Money $money;
 
-    private $text;
-
     /**
      * @param \DateTime $date
      * @param int $userId
@@ -35,25 +32,6 @@ class TransactionDTO
         $this->accountType = $accountType;
         $this->transactionType = $transactionType;
         $this->money = $money;
-        $this->text = str_repeat("kjnvdksjfvndkjf", 100000);
-    }
-
-    /**
-     * @param SourceFileLineDTO $sourceFileLineDTO
-     * @return TransactionDTO
-     * @throws \Exception
-     */
-    public static function createFromSourceFileLineDTO(SourceFileLineDTO $sourceFileLineDTO): TransactionDTO
-    {
-        $transactionDTO = new self();
-
-        $transactionDTO->date = \DateTime::createFromFormat('Y-m-d', $sourceFileLineDTO->getDate());
-        $transactionDTO->userId = $sourceFileLineDTO->getUserId();
-        $transactionDTO->accountType = new AccountTypeEnum($sourceFileLineDTO->getAccountType());
-        $transactionDTO->transactionType = new TransactionTypeEnum($sourceFileLineDTO->getTransactionType());
-        $transactionDTO->money = new Money($sourceFileLineDTO->getAmount(), new CurrencyEnum($sourceFileLineDTO->getCurrency()));
-
-        return $transactionDTO;
     }
 
     /**
