@@ -3,30 +3,35 @@
 namespace App\Service;
 
 use App\Collection\TransactionsCollection;
-use App\Enum\CurrencyEnum;
-use App\VO\Money;
+use App\Factory\CommissionRulesFacadeFactory;
 
 class CommissionCalculationService implements CommissionCalculationServiceInterface
 {
-    private CurrencyExchangeServiceInterface $currencyExchangeService;
+    private CommissionRulesFacadeFactory $commissionRulesFacadeFactory;
 
-    public function __construct(CurrencyExchangeServiceInterface $currencyExchangeService)
+    /**
+     * @param CommissionRulesFacadeFactory $commissionRulesFacadeFactory
+     */
+    public function __construct(CommissionRulesFacadeFactory $commissionRulesFacadeFactory)
     {
-        $this->currencyExchangeService = $currencyExchangeService;
+        $this->commissionRulesFacadeFactory = $commissionRulesFacadeFactory;
     }
 
     /**
      * @param TransactionsCollection $userTransactionsCollection
      * @return float
-     * @throws \Exception
      */
-    public function calculateFee(TransactionsCollection $userTransactionsCollection): float //TODO
+    public function calculateCommission(TransactionsCollection $userTransactionsCollection): float
     {
-        $transactionMoney = $userTransactionsCollection->getLastTransaction()->getMoney();
+        return $this->commissionRulesFacadeFactory->makeCommissionRulesFacade()->calculateCommission($userTransactionsCollection);
 
-        return $this->currencyExchangeService
-            ->convertMoney($transactionMoney, CurrencyEnum::getDefaultCurrency())
-            ->multiply(0.003)
-            ->getValue();
+        //+++TODO custom exceptions
+        //+++TODO money to EUR
+        //TODO php8.1
+        //TODO convert to .00
+        //TODO cache for currency rates api
+        //TODO notes
+        //TODO interface for readers
+        //TODO refactoring: script.php, TransactionsFileReader
     }
 }

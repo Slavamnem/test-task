@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Service\CommissionRulesChain;
 
 use App\Collection\TransactionsCollection;
 
-interface CommissionCalculationServiceInterface
+interface CommissionRulesChainInterface
 {
     /**
      * @param TransactionsCollection $userTransactionsCollection

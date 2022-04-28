@@ -8,6 +8,7 @@ use App\Helper\ValidationHelper;
 use App\AppKernel;
 use App\Service\TransactionsFileReader;
 use App\Service\TransactionsFileReaderInterface;
+use App\Factory\CommissionRulesFacadeFactory;
 use App\Factory\TransactionDTOFactory;
 use App\Collection\TransactionsCollection;
 use App\DTO\TransactionDTO;
@@ -22,31 +23,29 @@ $container = $kernel->getContainer();
 
 try {
     $sourceFileName = $argv[1];
-
     $sourceFile = fopen($sourceFileName, 'r');
-
     $currentFileLine = 1;
+
+
+    /** @var TransactionsFileReaderInterface $transactionsFileReader */
+    $transactionsFileReader = $container->get(TransactionsFileReader::class);
+    /** @var CommissionCalculationService $commissionCalculationService */
+    $commissionCalculationService = $container->get(CommissionCalculationService::class);
+
 
     while (($sourceFileLine = fgetcsv($sourceFile)) !== FALSE) {
         $sourceFileLineDTO = new SourceFileLineDTO($sourceFileLine[0], (int)$sourceFileLine[1], $sourceFileLine[2], $sourceFileLine[3], (float)$sourceFileLine[4], $sourceFileLine[5]);
         ValidationHelper::validateAndThrowException($sourceFileLineDTO);
 
-
-        //Для подчсчета комиссии надо помнить историю операций пользователя. И чтобы не хранить всю историю, подгружаю на каждом шаге только список транзакций текущего пользователя.
-        /** @var TransactionsFileReaderInterface $transactionsFileReader */
-        $transactionsFileReader = $container->get(TransactionsFileReader::class);
+        //Для подсчета комиссии надо помнить историю операций пользователя. И чтобы не хранить всю историю, подгружаю на каждом шаге только список транзакций текущего пользователя.
         $userTransactionsCollection = $transactionsFileReader->getAllUserTransactionsUpToCurrent($sourceFileName, $sourceFileLineDTO->getUserId(), $currentFileLine);
-
-
-        /** @var CommissionCalculationService $commissionCalculationService */
-        $commissionCalculationService = $container->get(CommissionCalculationService::class);
-        $commission = $commissionCalculationService->calculateFee($userTransactionsCollection);
-
+        $commission = $commissionCalculationService->calculateCommission($userTransactionsCollection);
 
         echo $commission . PHP_EOL;
         $currentFileLine++;
 //        dump($userTransactionsCollection->getSize());
     }
+
 
     fclose($sourceFile);
 } catch (\Throwable $exception) {

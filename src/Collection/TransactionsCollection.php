@@ -14,6 +14,7 @@ class TransactionsCollection
     /**
      * @param TransactionDTO $transactionDTO
      * @return $this
+     * @throws \Exception
      */
     public function addTransaction(TransactionDTO $transactionDTO): TransactionsCollection
     {

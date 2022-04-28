@@ -3,6 +3,7 @@
 namespace App\VO;
 
 use App\Enum\CurrencyEnum;
+use App\Exception\NotTheSameCurrenciesOperationException;
 
 class Money
 {
@@ -26,7 +27,7 @@ class Money
     public function add(Money $money): Money
     {
         if (!$money->getCurrency()->isEqual($this->getCurrency())) {
-            throw new \Exception('Currencies must be the same');
+            throw new NotTheSameCurrenciesOperationException();
         }
 
         $newValue = (float)bcadd((string)$this->value, (string)$money->value, self::PRECISION);
@@ -42,10 +43,14 @@ class Money
     public function minus(Money $money): Money
     {
         if (!$money->getCurrency()->isEqual($this->getCurrency())) {
-            throw new \Exception('Currencies must be the same');
+            throw new NotTheSameCurrenciesOperationException();
         }
 
         $newValue = (float)bcsub((string)$this->value, (string)$money->value, self::PRECISION);
+
+        if ($newValue < 0) {
+            $newValue = 0.00;
+        }
 
         return new Money($newValue, $this->getCurrency());
     }

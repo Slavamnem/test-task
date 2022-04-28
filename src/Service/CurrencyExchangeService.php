@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\DTO\ExchangeRatesResponseDTO;
 use App\Enum\CurrencyEnum;
+use App\Exception\NotFoundExchangeRateException;
 use App\Http\ExchangeRatesHttpInterface;
 use App\VO\Money;
 
@@ -42,8 +43,8 @@ class CurrencyExchangeService implements CurrencyExchangeServiceInterface
         $this->checkExchangeRateExistence($exchangeRates, $money->getCurrency());
         $this->checkExchangeRateExistence($exchangeRates, $newCurrency);
 
-        $moneyInBaseCurrency = $money->divide($exchangeRates->getRate($money->getCurrency()->getValue()));
-        $moneyInNewCurrency = $moneyInBaseCurrency->multiply($exchangeRates->getRate($newCurrency->getValue()));
+        $moneyInBaseCurrency = new Money($money->divide($exchangeRates->getRate($money->getCurrency()->getValue()))->getValue(), new CurrencyEnum($exchangeRates->getBase()));
+        $moneyInNewCurrency = new Money($moneyInBaseCurrency->multiply($exchangeRates->getRate($newCurrency->getValue()))->getValue(), $newCurrency);
 
         return $moneyInNewCurrency;
     }
@@ -67,7 +68,7 @@ class CurrencyExchangeService implements CurrencyExchangeServiceInterface
     private function checkExchangeRateExistence(ExchangeRatesResponseDTO $exchangeRatesResponseDTO, CurrencyEnum $currencyEnum): void
     {
         if (!$exchangeRatesResponseDTO->hasRate($currencyEnum->getValue())) {
-            throw new \Exception(sprintf(self::NOT_FOUND_EXCHANGE_RATE_MESSAGE, $currencyEnum->getValue()));
+            throw new NotFoundExchangeRateException(sprintf(self::NOT_FOUND_EXCHANGE_RATE_MESSAGE, $currencyEnum->getValue()));
         }
     }
 }

@@ -20,7 +20,7 @@ class ValidationHelper
         $errors = $validator->validate($object, $constraints, $groups);
 
         if (count($errors) > 0) {
-            throw new BadRequestHttpException(self::getErrorMessage($errors));
+            throw new BadRequestHttpException("Validation error: " . self::getErrorMessage($errors));
         }
     }
 
