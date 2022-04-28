@@ -8,67 +8,34 @@ use App\VO\Money;
 
 class TransactionDTO
 {
-    private \DateTime $date;
+    public function __construct(
+        private \DateTime $date,
+        private int $userId,
+        private AccountTypeEnum $accountTypeEnum,
+        private TransactionTypeEnum $transactionTypeEnum,
+        private Money $money
+    ) {}
 
-    private int $userId;
-
-    private AccountTypeEnum $accountType;
-
-    private TransactionTypeEnum $transactionType;
-
-    private Money $money;
-
-    /**
-     * @param \DateTime $date
-     * @param int $userId
-     * @param AccountTypeEnum $accountType
-     * @param TransactionTypeEnum $transactionType
-     * @param Money $money
-     */
-    public function __construct(\DateTime $date, int $userId, AccountTypeEnum $accountType, TransactionTypeEnum $transactionType, Money $money)
-    {
-        $this->date = $date;
-        $this->userId = $userId;
-        $this->accountType = $accountType;
-        $this->transactionType = $transactionType;
-        $this->money = $money;
-    }
-
-    /**
-     * @return \DateTime
-     */
     public function getDate(): \DateTime
     {
         return $this->date;
     }
 
-    /**
-     * @return int
-     */
     public function getUserId(): int
     {
         return $this->userId;
     }
 
-    /**
-     * @return AccountTypeEnum
-     */
-    public function getAccountType(): AccountTypeEnum
+    public function getAccountTypeEnum(): AccountTypeEnum
     {
-        return $this->accountType;
+        return $this->accountTypeEnum;
     }
 
-    /**
-     * @return TransactionTypeEnum
-     */
-    public function getTransactionType(): TransactionTypeEnum
+    public function getTransactionTypeEnum(): TransactionTypeEnum
     {
-        return $this->transactionType;
+        return $this->transactionTypeEnum;
     }
 
-    /**
-     * @return Money
-     */
     public function getMoney(): Money
     {
         return $this->money;

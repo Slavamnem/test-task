@@ -6,10 +6,5 @@ use App\Collection\TransactionsCollection;
 
 interface CommissionCalculationServiceInterface
 {
-    /**
-     * @param TransactionsCollection $userTransactionsCollection
-     * @return float
-     * @throws \Exception
-     */
     public function calculateCommission(TransactionsCollection $userTransactionsCollection): float;
 }

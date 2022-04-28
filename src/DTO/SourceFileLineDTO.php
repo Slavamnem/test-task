@@ -7,8 +7,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SourceFileLineDTO
 {
     /**
-     * @var string
-     *
      * @Assert\NotBlank(message="SourceFileLineDTO date field is missing")
      * @Assert\Type(type="string")
      * @Assert\Date
@@ -16,8 +14,6 @@ class SourceFileLineDTO
     private string $date;
 
     /**
-     * @var int
-     *
      * @Assert\NotBlank(message="SourceFileLineDTO userId field is missing")
      * @Assert\Positive
      * @Assert\Type(type="integer")
@@ -25,32 +21,26 @@ class SourceFileLineDTO
     private int $userId;
 
     /**
-     * @var string
-     *
      * @Assert\NotBlank(message="SourceFileLineDTO AccountType field is missing")
      * @Assert\Type(type="string")
      * @Assert\Choice(
      *     message="SourceFileLineDTO accountType not in enum scope",
-     *     callback={"App\Enum\AccountTypeEnum", "getEnumsList"}
+     *     callback={"App\Enum\AccountTypeEnum", "getCasesValues"}
      * )
      */
     private string $accountType;
 
     /**
-     * @var string
-     *
      * @Assert\NotBlank(message="SourceFileLineDTO TransactionType field is missing")
      * @Assert\Type(type="string")
      * @Assert\Choice(
      *     message="SourceFileLineDTO transactionType not in enum scope",
-     *     callback={"App\Enum\TransactionTypeEnum", "getEnumsList"}
+     *     callback={"App\Enum\TransactionTypeEnum", "getCasesValues"}
      * )
      */
     private string $transactionType;
 
     /**
-     * @var float
-     *
      * @Assert\NotBlank(message="SourceFileLineDTO anount field is missing")
      * @Assert\Positive
      * @Assert\Type(type="float")
@@ -58,25 +48,15 @@ class SourceFileLineDTO
     private float $amount;
 
     /**
-     * @var string
-     *
      * @Assert\NotBlank(message="SourceFileLineDTO currency field is missing")
      * @Assert\Type(type="string")
      * @Assert\Choice(
      *     message="SourceFileLineDTO currency not in enum scope",
-     *     callback={"App\Enum\CurrencyEnum", "getEnumsList"}
+     *     callback={"App\Enum\CurrencyEnum", "getCasesValues"}
      * )
      */
     private string $currency;
 
-    /**
-     * @param string $date
-     * @param int $userId
-     * @param string $accountType
-     * @param string $transactionType
-     * @param float $amount
-     * @param string $currency
-     */
     public function __construct(string $date, int $userId, string $accountType, string $transactionType, float $amount, string $currency)
     {
         $this->date = $date;
@@ -87,49 +67,31 @@ class SourceFileLineDTO
         $this->currency = $currency;
     }
 
-    /**
-     * @return string
-     */
     public function getDate(): string
     {
         return $this->date;
     }
 
-    /**
-     * @return int
-     */
     public function getUserId(): int
     {
         return $this->userId;
     }
 
-    /**
-     * @return string
-     */
     public function getAccountType(): string
     {
         return $this->accountType;
     }
 
-    /**
-     * @return string
-     */
     public function getTransactionType(): string
     {
         return $this->transactionType;
     }
 
-    /**
-     * @return float
-     */
     public function getAmount(): float
     {
         return $this->amount;
     }
 
-    /**
-     * @return string
-     */
     public function getCurrency(): string
     {
         return $this->currency;

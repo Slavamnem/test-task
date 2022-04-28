@@ -8,23 +8,6 @@ use App\Factory\TransactionDTOFactory;
 
 class TransactionsFileReader implements TransactionsFileReaderInterface
 {
-//    private CurrencyExchangeServiceInterface $currencyExchangeService;
-//
-//    /**
-//     * @param CurrencyExchangeServiceInterface $currencyExchangeService
-//     */
-//    public function __construct(CurrencyExchangeServiceInterface $currencyExchangeService)
-//    {
-//        $this->currencyExchangeService = $currencyExchangeService;
-//    }
-
-    /**
-     * @param string $transactionsFileName
-     * @param int $userId
-     * @param int $currentTransactionLine
-     * @return TransactionsCollection
-     * @throws \Exception
-     */
     public function getAllUserTransactionsUpToCurrent(string $transactionsFileName, int $userId, int $currentTransactionLine): TransactionsCollection
     {
         $transactionsFile = fopen($transactionsFileName, 'r');

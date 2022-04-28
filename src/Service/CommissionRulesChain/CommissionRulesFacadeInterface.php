@@ -6,9 +6,5 @@ use App\Collection\TransactionsCollection;
 
 interface CommissionRulesFacadeInterface
 {
-    /**
-     * @param TransactionsCollection $userTransactionsCollection
-     * @return float
-     */
     public function calculateCommission(TransactionsCollection $userTransactionsCollection): float;
 }

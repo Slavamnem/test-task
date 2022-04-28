@@ -6,8 +6,5 @@ use App\DTO\ExchangeRatesResponseDTO;
 
 interface ExchangeRatesHttpInterface
 {
-    /**
-     * @return ExchangeRatesResponseDTO
-     */
     public function getCurrentExchangeRates(): ExchangeRatesResponseDTO;
 }

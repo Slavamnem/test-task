@@ -15,11 +15,6 @@ class PrivateAccountWithdrawRule extends AbstractRule
     private const COMMISSION_PERCENT = 0.3;
     private const FREE_SUM = 1000;
 
-    /**
-     * @param TransactionsCollection $userTransactionsCollection
-     * @return float
-     * @throws \Exception
-     */
     protected function getLastUserTransactionCommission(TransactionsCollection $userTransactionsCollection): float
     {
         $allUserWithdrawsForLastTransactionWeek = $this->getAllUserWithdrawsForLastTransactionWeek($userTransactionsCollection);
@@ -43,23 +38,14 @@ class PrivateAccountWithdrawRule extends AbstractRule
             ->getValue();
     }
 
-    /**
-     * @param TransactionsCollection $userTransactionsCollection
-     * @return bool
-     */
     protected function isAppropriateRule(TransactionsCollection $userTransactionsCollection): bool
     {
         return (
-            $userTransactionsCollection->getLastTransaction()->getTransactionType()->isEqual(TransactionTypeEnum::WITHDRAW()) &&
-            $userTransactionsCollection->getLastTransaction()->getAccountType()->isEqual(AccountTypeEnum::PRIVATE())
+            $userTransactionsCollection->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw &&
+            $userTransactionsCollection->getLastTransaction()->getAccountTypeEnum() == AccountTypeEnum::Private
         );
     }
 
-    /**
-     * @param TransactionsCollection $allUserWithdrawsForLastTransactionWeek
-     * @return Money
-     * @throws \Exception
-     */
     private function getAllUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency(TransactionsCollection $allUserWithdrawsForLastTransactionWeek): Money
     {
         $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = new Money(0.0, CurrencyEnum::getDefaultCurrency());
@@ -73,11 +59,6 @@ class PrivateAccountWithdrawRule extends AbstractRule
         return $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency;
     }
 
-    /**
-     * @param TransactionsCollection $userTransactionsCollection
-     * @return TransactionsCollection
-     * @throws \Exception
-     */
     private function getAllUserWithdrawsForLastTransactionWeek(TransactionsCollection $userTransactionsCollection): TransactionsCollection
     {
         $allUserWithdrawsForLastTransactionWeek = new TransactionsCollection();
@@ -86,7 +67,7 @@ class PrivateAccountWithdrawRule extends AbstractRule
 
         foreach ($userTransactionsCollection->getTransactions() as $userTransactionDTO) {
             if (
-                $userTransactionDTO->getTransactionType()->isEqual(TransactionTypeEnum::WITHDRAW()) &&
+                $userTransactionDTO->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw &&
                 $userTransactionDTO->getDate()->getTimestamp() >= $lastTransactionWeekStartTimestamp)
             {
                 $allUserWithdrawsForLastTransactionWeek->addTransaction($userTransactionDTO);

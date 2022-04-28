@@ -9,24 +9,11 @@ class Money
 {
     public const PRECISION = 2;
 
-    private float $value;
+    public function __construct(private float $value, private CurrencyEnum $currency) {}
 
-    private CurrencyEnum $currency;
-
-    public function __construct(float $value, CurrencyEnum $currency)
-    {
-        $this->value = $value;
-        $this->currency = $currency;
-    }
-
-    /**
-     * @param Money $money
-     * @return Money
-     * @throws \Exception
-     */
     public function add(Money $money): Money
     {
-        if (!$money->getCurrency()->isEqual($this->getCurrency())) {
+        if (!$money->getCurrency() == $this->getCurrency()) {
             throw new NotTheSameCurrenciesOperationException();
         }
 
@@ -35,14 +22,9 @@ class Money
         return new Money($newValue, $this->getCurrency());
     }
 
-    /**
-     * @param Money $money
-     * @return Money
-     * @throws \Exception
-     */
     public function minus(Money $money): Money
     {
-        if (!$money->getCurrency()->isEqual($this->getCurrency())) {
+        if (!$money->getCurrency() == $this->getCurrency()) {
             throw new NotTheSameCurrenciesOperationException();
         }
 
@@ -55,10 +37,6 @@ class Money
         return new Money($newValue, $this->getCurrency());
     }
 
-    /**
-     * @param float $num
-     * @return Money
-     */
     public function multiply(float $num): Money
     {
         $newValue = (float)bcmul((string)$this->value, (string)$num, self::PRECISION);
@@ -66,10 +44,6 @@ class Money
         return new Money($newValue, $this->getCurrency());
     }
 
-    /**
-     * @param float $num
-     * @return Money
-     */
     public function divide(float $num): Money
     {
         $newValue = (float)bcdiv((string)$this->value, (string)$num, self::PRECISION);
@@ -77,17 +51,11 @@ class Money
         return new Money($newValue, $this->getCurrency());
     }
 
-    /**
-     * @return float
-     */
     public function getValue(): float
     {
         return $this->value;
     }
 
-    /**
-     * @return CurrencyEnum
-     */
     public function getCurrency(): CurrencyEnum
     {
         return $this->currency;

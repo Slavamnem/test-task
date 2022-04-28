@@ -11,10 +11,6 @@ class BusinessAccountWithdrawRule extends AbstractRule
 {
     private const COMMISSION_PERCENT = 0.5;
 
-    /**
-     * @param TransactionsCollection $userTransactionsCollection
-     * @return float
-     */
     protected function getLastUserTransactionCommission(TransactionsCollection $userTransactionsCollection): float
     {
         return $userTransactionsCollection
@@ -24,15 +20,11 @@ class BusinessAccountWithdrawRule extends AbstractRule
             ->getValue();
     }
 
-    /**
-     * @param TransactionsCollection $userTransactionsCollection
-     * @return bool
-     */
     protected function isAppropriateRule(TransactionsCollection $userTransactionsCollection): bool
     {
         return (
-            $userTransactionsCollection->getLastTransaction()->getTransactionType()->isEqual(TransactionTypeEnum::WITHDRAW()) &&
-            $userTransactionsCollection->getLastTransaction()->getAccountType()->isEqual(AccountTypeEnum::BUSINESS())
+            $userTransactionsCollection->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw &&
+            $userTransactionsCollection->getLastTransaction()->getAccountTypeEnum() == AccountTypeEnum::Business
         );
     }
 }

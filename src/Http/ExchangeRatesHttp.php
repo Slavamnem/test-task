@@ -18,10 +18,6 @@ class ExchangeRatesHttp implements ExchangeRatesHttpInterface
         $this->guzzleClient = new Client();
     }
 
-    /**
-     * @return ExchangeRatesResponseDTO
-     * @throws ExchangeRatesHttpException
-     */
     public function getCurrentExchangeRates(): ExchangeRatesResponseDTO
     {
         try {

@@ -2,17 +2,12 @@
 
 namespace App\Enum;
 
-/**
- * @method static self DEPOSIT
- * @method static self WITHDRAW
- */
-class TransactionTypeEnum extends AbstractEnum
-{
-    public const DEPOSIT = 'deposit';
-    public const WITHDRAW = 'withdraw';
+use App\Util\EnumTrait;
 
-    protected static array $_enums = [
-        1 => self::DEPOSIT,
-        2 => self::WITHDRAW,
-    ];
+enum TransactionTypeEnum: string
+{
+    use EnumTrait;
+
+    case Deposit = 'deposit';
+    case Withdraw = 'withdraw';
 }

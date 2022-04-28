@@ -49,5 +49,6 @@ try {
 
     fclose($sourceFile);
 } catch (\Throwable $exception) {
+    echo $exception->getFile();
     echo $exception->getMessage() . PHP_EOL;
 }

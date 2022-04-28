@@ -5,7 +5,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.1",
         "csa/guzzle-bundle": "^3.2",
         "doctrine/annotations": "^1.13",
         "jms/serializer-bundle": "^4.0",
