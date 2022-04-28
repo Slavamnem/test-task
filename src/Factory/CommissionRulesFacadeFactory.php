@@ -15,9 +15,6 @@ class CommissionRulesFacadeFactory
 {
     public function __construct(private CurrencyExchangeServiceInterface $currencyExchangeService) {}
 
-    /**
-     * @return CommissionRulesFacadeInterface
-     */
     public function makeCommissionRulesFacade(): CommissionRulesFacadeInterface
     {
         return new CommissionRulesFacade([

@@ -13,9 +13,6 @@ enum CurrencyEnum: string
     case Jpy = 'JPY';
     case Uah = 'UAH';
 
-    /**
-     * @return CurrencyEnum
-     */
     public static function getDefaultCurrency(): CurrencyEnum
     {
         return CurrencyEnum::Eur;

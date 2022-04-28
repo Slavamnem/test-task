@@ -12,7 +12,6 @@ class CommissionCalculationService implements CommissionCalculationServiceInterf
 
     public function calculateCommission(TransactionsCollection $userTransactionsCollection): float
     {
-//        dd(CurrencyEnum::getCasesValues());
         return $this->commissionRulesFacadeFactory->makeCommissionRulesFacade()->calculateCommission($userTransactionsCollection);
 
         //+++TODO custom exceptions
