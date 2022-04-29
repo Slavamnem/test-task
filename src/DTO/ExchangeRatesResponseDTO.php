@@ -28,6 +28,7 @@ class ExchangeRatesResponseDTO
 
     public function getRate(string $currencyCode): float
     {
+        //TODO delete
         if ($currencyCode == "USD") {
             return 1.1497;
         }
@@ -35,6 +36,7 @@ class ExchangeRatesResponseDTO
         if ($currencyCode == "JPY") {
             return 129.53;
         }
+        //TODO delete
 
         return $this->rates[$currencyCode];
     }

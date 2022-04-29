@@ -14,5 +14,7 @@ services:
   App\Service\CommissionCalculationService:
     public: true
 
-  App\Service\TransactionsFileReader:
+  App\Service\TransactionReader\TransactionFileReader:
     public: true
+
+  App\Http\ExchangeRatesHttpInterface: '@App\Http\ExchangeRatesHttpProxy'

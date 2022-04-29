@@ -6,5 +6,5 @@ use App\Collection\TransactionsCollection;
 
 interface CommissionRulesChainInterface
 {
-    public function calculateCommission(TransactionsCollection $userTransactionsCollection): float;
+    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float;
 }

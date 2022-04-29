@@ -2,53 +2,41 @@
 
 require 'vendor/autoload.php';
 
-use App\Service\CommissionCalculationService;
-use App\DTO\SourceFileLineDTO;
-use App\Helper\ValidationHelper;
 use App\AppKernel;
-use App\Service\TransactionsFileReader;
-use App\Service\TransactionsFileReaderInterface;
-use App\Factory\CommissionRulesFacadeFactory;
-use App\Factory\TransactionDTOFactory;
-use App\Collection\TransactionsCollection;
-use App\DTO\TransactionDTO;
-use Symfony\Component\Console\Application;
+use App\Service\TransactionReader\TransactionFileReader;
+use App\Service\TransactionReader\TransactionReaderInterface;
+use App\DTO\TransactionReaderRequest\TransactionFileReaderRequestDTO;
+use App\Service\CommissionCalculationServiceInterface;
+use App\Service\CommissionCalculationService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
+const COMMISSION_PRECISION = 2;
 
-$kernel = new AppKernel('dev', true);
-$kernel->boot();
-$container = $kernel->getContainer();
-//$application = $container->get(Application::class); //$application->run();
-
+$container = createContainer();
 
 try {
-    $sourceFileName = $argv[1];
-    $sourceFile = fopen($sourceFileName, 'r');
-    $currentFileLine = 1;
-
-
-    /** @var TransactionsFileReaderInterface $transactionsFileReader */
-    $transactionsFileReader = $container->get(TransactionsFileReader::class);
-    /** @var CommissionCalculationService $commissionCalculationService */
+    /** @var TransactionReaderInterface $transactionFileReader */
+    $transactionFileReader = $container->get(TransactionFileReader::class);
+    /** @var CommissionCalculationServiceInterface $commissionCalculationService */
     $commissionCalculationService = $container->get(CommissionCalculationService::class);
 
+    foreach ($transactionFileReader->processTransactions(new TransactionFileReaderRequestDTO($argv[1])) as $userHistoryUpToCurrentTransaction) {
+        $transactionCommission = $commissionCalculationService->calculateCommission($userHistoryUpToCurrentTransaction);
 
-    while (($sourceFileLine = fgetcsv($sourceFile)) !== FALSE) {
-        $sourceFileLineDTO = new SourceFileLineDTO($sourceFileLine[0], (int)$sourceFileLine[1], $sourceFileLine[2], $sourceFileLine[3], (float)$sourceFileLine[4], $sourceFileLine[5]);
-        ValidationHelper::validateAndThrowException($sourceFileLineDTO);
-
-        //Для подсчета комиссии надо помнить историю операций пользователя. И чтобы не хранить всю историю, подгружаю на каждом шаге только список транзакций текущего пользователя.
-        $userTransactionsCollection = $transactionsFileReader->getAllUserTransactionsUpToCurrent($sourceFileName, $sourceFileLineDTO->getUserId(), $currentFileLine);
-        $commission = $commissionCalculationService->calculateCommission($userTransactionsCollection);
-
-        echo $commission . PHP_EOL;
-        $currentFileLine++;
-//        dump($userTransactionsCollection->getSize());
+        echo(getCommissionOutputFormat($transactionCommission));
     }
-
-
-    fclose($sourceFile);
 } catch (\Throwable $exception) {
-    echo $exception->getFile();
-    echo $exception->getMessage() . PHP_EOL;
+    echo($exception->getMessage() . PHP_EOL);
+}
+
+function createContainer(): ContainerInterface
+{
+    $kernel = new AppKernel('prod', true);
+    $kernel->boot();
+    return $kernel->getContainer();
+}
+
+function getCommissionOutputFormat(float $commission): string
+{
+    return number_format($commission, COMMISSION_PRECISION, thousands_separator: '') . PHP_EOL;
 }

@@ -12,12 +12,12 @@ abstract class AbstractRule
 
     public function __construct(protected CurrencyExchangeServiceInterface $currencyExchangeService) {}
 
-    public function calculateCommission(TransactionsCollection $userTransactionsCollection): float
+    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
     {
-        if ($this->isAppropriateRule($userTransactionsCollection)) {
-            return $this->getLastUserTransactionCommission($userTransactionsCollection);
+        if ($this->isAppropriateRule($userHistoryUpToCurrentTransaction)) {
+            return $this->getLastUserTransactionCommission($userHistoryUpToCurrentTransaction);
         } elseif (!empty($this->nextRule)) {
-            return $this->nextRule->calculateCommission($userTransactionsCollection);
+            return $this->nextRule->calculateCommission($userHistoryUpToCurrentTransaction);
         }
 
         throw new NotFoundAnyCommissionRuleException();
@@ -29,7 +29,7 @@ abstract class AbstractRule
         return $this;
     }
 
-    abstract protected function getLastUserTransactionCommission(TransactionsCollection $userTransactionsCollection): float;
+    abstract protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float;
 
-    abstract protected function isAppropriateRule(TransactionsCollection $userTransactionsCollection): bool;
+    abstract protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool;
 }

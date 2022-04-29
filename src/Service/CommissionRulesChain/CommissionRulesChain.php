@@ -8,8 +8,8 @@ class CommissionRulesChain implements CommissionRulesChainInterface
 {
     public function __construct(protected AbstractRule $firstRuleOfChain) {}
 
-    public function calculateCommission(TransactionsCollection $userTransactionsCollection): float
+    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
     {
-        return $this->firstRuleOfChain->calculateCommission($userTransactionsCollection);
+        return $this->firstRuleOfChain->calculateCommission($userHistoryUpToCurrentTransaction);
     }
 }

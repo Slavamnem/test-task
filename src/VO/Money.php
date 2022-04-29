@@ -7,7 +7,7 @@ use App\Exception\NotTheSameCurrenciesOperationException;
 
 class Money
 {
-    public const PRECISION = 2;
+    public const PRECISION = 4;
 
     public function __construct(private float $value, private CurrencyEnum $currency) {}
 

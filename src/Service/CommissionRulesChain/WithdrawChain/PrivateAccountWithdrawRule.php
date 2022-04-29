@@ -15,17 +15,17 @@ class PrivateAccountWithdrawRule extends AbstractRule
     private const COMMISSION_PERCENT = 0.3;
     private const FREE_SUM = 1000;
 
-    protected function getLastUserTransactionCommission(TransactionsCollection $userTransactionsCollection): float
+    protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
     {
-        $allUserWithdrawsForLastTransactionWeek = $this->getAllUserWithdrawsForLastTransactionWeek($userTransactionsCollection);
+        $allUserWithdrawsForLastTransactionWeek = $this->getAllUserWithdrawsForLastTransactionWeek($userHistoryUpToCurrentTransaction);
 
         if ($allUserWithdrawsForLastTransactionWeek->getSize() > self::FREE_TRANSACTIONS_PER_WEEK) {
-            return $userTransactionsCollection->getLastTransaction()->getMoney()->multiply(self::COMMISSION_PERCENT / 100)->getValue();
+            return $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney()->multiply(self::COMMISSION_PERCENT / 100)->getValue();
         }
 
-        $lastTransactionMoney = $userTransactionsCollection->getLastTransaction()->getMoney();
+        $lastTransactionMoney = $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney();
 
-        $lastTransactionMoneyInDefaultCurrency = $this->currencyExchangeService->convertMoneyToDefaultCurrency($userTransactionsCollection->getLastTransaction()->getMoney());
+        $lastTransactionMoneyInDefaultCurrency = $this->currencyExchangeService->convertMoneyToDefaultCurrency($userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney());
         $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = $this->getAllUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency($allUserWithdrawsForLastTransactionWeek);
         $remainingWithoutCommissionMoneyInDefaultCurrency = (new Money(self::FREE_SUM, CurrencyEnum::getDefaultCurrency()))->minus(
                 $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency->minus($lastTransactionMoneyInDefaultCurrency)
@@ -38,11 +38,11 @@ class PrivateAccountWithdrawRule extends AbstractRule
             ->getValue();
     }
 
-    protected function isAppropriateRule(TransactionsCollection $userTransactionsCollection): bool
+    protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool
     {
         return (
-            $userTransactionsCollection->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw &&
-            $userTransactionsCollection->getLastTransaction()->getAccountTypeEnum() == AccountTypeEnum::Private
+            $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw &&
+            $userHistoryUpToCurrentTransaction->getLastTransaction()->getAccountTypeEnum() == AccountTypeEnum::Private
         );
     }
 

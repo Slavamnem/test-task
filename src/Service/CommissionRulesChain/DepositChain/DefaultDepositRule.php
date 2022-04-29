@@ -10,17 +10,17 @@ class DefaultDepositRule extends AbstractRule
 {
     private const COMMISSION_PERCENT = 0.03;
 
-    protected function getLastUserTransactionCommission(TransactionsCollection $userTransactionsCollection): float
+    protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
     {
-        return $userTransactionsCollection
+        return $userHistoryUpToCurrentTransaction
             ->getLastTransaction()
             ->getMoney()
             ->multiply(self::COMMISSION_PERCENT / 100)
             ->getValue();
     }
 
-    protected function isAppropriateRule(TransactionsCollection $userTransactionsCollection): bool
+    protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool
     {
-        return $userTransactionsCollection->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Deposit;
+        return $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Deposit;
     }
 }
