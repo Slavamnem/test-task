@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Service\CommissionRulesChain\WithdrawChain;
 
@@ -7,23 +9,33 @@ use App\Enum\AccountTypeEnum;
 use App\Enum\CurrencyEnum;
 use App\Enum\TransactionTypeEnum;
 use App\Service\CommissionRulesChain\AbstractRule;
+use App\Service\CurrencyExchangeServiceInterface;
 use App\VO\Money;
 
 class PrivateAccountWithdrawRule extends AbstractRule
 {
-    private const FREE_TRANSACTIONS_PER_WEEK = 3;
-    private const COMMISSION_PERCENT = 0.3;
-    private const FREE_SUM = 1000;
+    private int $freeTransactionPerWeek;
+    private float $commissionPercent;
+    private int $freeSum;
+
+    public function __construct(protected CurrencyExchangeServiceInterface $currencyExchangeService)
+    {
+        $this->freeTransactionPerWeek = (int)$_ENV['WITHDRAW_PRIVATE_ACCOUNT_FREE_TRANSACTIONS_PER_WEEK'];
+        $this->commissionPercent = (float)$_ENV['WITHDRAW_PRIVATE_ACCOUNT_COMMISSION_PERCENT'];
+        $this->freeSum = (int)$_ENV['WITHDRAW_PRIVATE_ACCOUNT_FREE_SUM'];
+
+        parent::__construct($this->currencyExchangeService);
+    }
 
     protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
     {
         $allUserWithdrawsForLastTransactionWeek = $this->getAllUserWithdrawsForLastTransactionWeek($userHistoryUpToCurrentTransaction);
 
-        if ($allUserWithdrawsForLastTransactionWeek->getSize() > self::FREE_TRANSACTIONS_PER_WEEK) {
+        if ($allUserWithdrawsForLastTransactionWeek->getSize() > $this->freeTransactionPerWeek) {
             return $userHistoryUpToCurrentTransaction
                 ->getLastTransaction()
                 ->getMoney()
-                ->multiply(self::COMMISSION_PERCENT / 100)
+                ->multiply($this->commissionPercent / 100)
                 ->getValue();
         }
 
@@ -35,7 +47,7 @@ class PrivateAccountWithdrawRule extends AbstractRule
         $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = $this->getAllUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency(
             $allUserWithdrawsForLastTransactionWeek
         );
-        $remainingWithoutCommissionMoneyInDefaultCurrency = (new Money(self::FREE_SUM, CurrencyEnum::getDefaultCurrency()))->minus(
+        $remainingWithoutCommissionMoneyInDefaultCurrency = (new Money($this->freeSum, CurrencyEnum::getDefaultCurrency()))->minus(
             $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency->minus($lastTransactionMoneyInDefaultCurrency)
         );
         $underCommissionMoneyInDefaultCurrency = $lastTransactionMoneyInDefaultCurrency->minus(
@@ -44,7 +56,7 @@ class PrivateAccountWithdrawRule extends AbstractRule
 
         return $this->currencyExchangeService
             ->convertMoney($underCommissionMoneyInDefaultCurrency, $lastTransactionMoney->getCurrency())
-            ->multiply(self::COMMISSION_PERCENT / 100)
+            ->multiply($this->commissionPercent / 100)
             ->getValue();
     }
 

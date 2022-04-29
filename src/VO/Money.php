@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\VO;
 
@@ -7,9 +9,16 @@ use App\Exception\NotTheSameCurrenciesOperationException;
 
 class Money
 {
-    public const PRECISION = 4;
+    private float $value;
+    private CurrencyEnum $currency;
+    private int $precision;
 
-    public function __construct(private float $value, private CurrencyEnum $currency) {}
+    public function __construct(float $value, CurrencyEnum $currency)
+    {
+        $this->value = $value;
+        $this->currency = $currency;
+        $this->precision = (int)$_ENV['MONEY_PRECISION'];
+    }
 
     public function add(Money $money): Money
     {
@@ -17,7 +26,7 @@ class Money
             throw new NotTheSameCurrenciesOperationException();
         }
 
-        $newValue = (float)bcadd((string)$this->value, (string)$money->value, self::PRECISION);
+        $newValue = (float)bcadd((string)$this->value, (string)$money->value, $this->precision);
 
         return new Money($newValue, $this->getCurrency());
     }
@@ -28,7 +37,7 @@ class Money
             throw new NotTheSameCurrenciesOperationException();
         }
 
-        $newValue = (float)bcsub((string)$this->value, (string)$money->value, self::PRECISION);
+        $newValue = (float)bcsub((string)$this->value, (string)$money->value, $this->precision);
 
         if ($newValue < 0) {
             $newValue = 0.00;
@@ -39,14 +48,14 @@ class Money
 
     public function multiply(float $num): Money
     {
-        $newValue = (float)bcmul((string)$this->value, (string)$num, self::PRECISION);
+        $newValue = (float)bcmul((string)$this->value, (string)$num, $this->precision);
 
         return new Money($newValue, $this->getCurrency());
     }
 
     public function divide(float $num): Money
     {
-        $newValue = (float)bcdiv((string)$this->value, (string)$num, self::PRECISION);
+        $newValue = (float)bcdiv((string)$this->value, (string)$num, $this->precision);
 
         return new Money($newValue, $this->getCurrency());
     }

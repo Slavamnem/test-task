@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Http;
 
@@ -9,19 +11,19 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ExchangeRatesHttp implements ExchangeRatesHttpInterface
 {
-    const EXCHANGE_RATES_API_URL = 'https://developers.paysera.com/tasks/api/currency-exchange-rates';
-
+    private string $exchangeRatesApiUrl;
     private HttpClientInterface $httpClient;
 
-    public function __construct()
+    public function __construct(string $exchangeRatesApiUrl)
     {
+        $this->exchangeRatesApiUrl = $exchangeRatesApiUrl;
         $this->httpClient = new CurlHttpClient();
     }
 
     public function getCurrentExchangeRates(): ExchangeRatesResponseDTO
     {
         try {
-            $exchangeRatesResponse = $this->httpClient->request('GET', self::EXCHANGE_RATES_API_URL);
+            $exchangeRatesResponse = $this->httpClient->request('GET', $this->exchangeRatesApiUrl);
 
             $responseData = json_decode($exchangeRatesResponse->getContent(), true);
 

@@ -13,8 +13,10 @@ services:
 
   App\Service\CommissionCalculationService:
     public: true
-
   App\Service\TransactionReader\TransactionFileReader:
     public: true
 
   App\Http\ExchangeRatesHttpInterface: '@App\Http\ExchangeRatesHttpProxy'
+  App\Http\ExchangeRatesHttp:
+    arguments:
+      $exchangeRatesApiUrl: '%env(EXCHANGE_RATES_API_URL)%'

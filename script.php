@@ -11,6 +11,7 @@ use App\DTO\TransactionReaderRequest\TransactionFileReaderRequestDTO;
 use App\Service\CommissionCalculationServiceInterface;
 use App\Service\CommissionCalculationService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Dotenv\Dotenv;
 
 const COMMISSION_PRECISION = 2;
 
@@ -33,7 +34,8 @@ try {
 
 function createContainer(): ContainerInterface
 {
-    $kernel = new AppKernel('prod', true);
+    (new Dotenv())->bootEnv('.env');
+    $kernel = new AppKernel($_ENV['ENV'], (bool)$_ENV['DEBUG']);
     $kernel->boot();
     return $kernel->getContainer();
 }

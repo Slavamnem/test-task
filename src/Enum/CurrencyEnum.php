@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Enum;
 
@@ -15,6 +17,6 @@ enum CurrencyEnum: string
 
     public static function getDefaultCurrency(): CurrencyEnum
     {
-        return CurrencyEnum::Eur;
+        return CurrencyEnum::from($_ENV['DEFAULT_CURRENCY']);
     }
 }

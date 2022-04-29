@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
@@ -12,7 +14,7 @@ class ScriptTest extends TestCase
 {
     public function test_script(): void
     {
-        /*$exchangeRatesMock = $this->getMockBuilder(ExchangeRatesHttpInterface::class)->getMock();
+        $exchangeRatesMock = $this->getMockBuilder(ExchangeRatesHttpInterface::class)->getMock();
 
         $exchangeRatesMock->method('getCurrentExchangeRates')->willReturn(
             new ExchangeRatesResponseDTO(CurrencyEnum::Eur->value, (new DateTime())->format('Y-m-d'), [
@@ -24,6 +26,6 @@ class ScriptTest extends TestCase
 
         $res = $exchangeRatesMock->getCurrentExchangeRates();
 
-        $this->assertEquals(1, $res->getRate(CurrencyEnum::Eur->value));*/
+        $this->assertEquals(1, $res->getRate(CurrencyEnum::Eur->value));
     }
 }
