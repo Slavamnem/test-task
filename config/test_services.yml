@@ -1,0 +1,22 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  App\:
+    resource: '../src/*/*'
+
+  Symfony\Component\Console\Application:
+    # why public? so we can get it from container in bin file
+    # via "$container->get(Application::class)"
+    public: true
+
+  App\Service\CommissionCalculationService:
+    public: true
+  App\Service\TransactionReader\TransactionFileReader:
+    public: true
+
+  App\Http\ExchangeRatesHttpInterface: '@App\Http\ExchangeRatesHttpTestProxy'
+  App\Http\ExchangeRatesHttp:
+    arguments:
+      $exchangeRatesApiUrl: '%env(EXCHANGE_RATES_API_URL)%'

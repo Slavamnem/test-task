@@ -15,7 +15,7 @@ use Symfony\Component\Dotenv\Dotenv;
 
 const COMMISSION_PRECISION = 2;
 
-$container = createContainer();
+$container = initializeContainer($argv);
 
 try {
     /** @var TransactionReaderInterface $transactionFileReader */
@@ -32,10 +32,11 @@ try {
     echo($exception->getMessage() . PHP_EOL);
 }
 
-function createContainer(): ContainerInterface
+function initializeContainer($argv): ContainerInterface
 {
+    error_reporting(0);
     (new Dotenv())->bootEnv('.env');
-    $kernel = new AppKernel($_ENV['ENV'], (bool)$_ENV['DEBUG']);
+    $kernel = new AppKernel($argv[2] ?: $_ENV['ENV'], (bool)$_ENV['DEBUG']);
     $kernel->boot();
     return $kernel->getContainer();
 }

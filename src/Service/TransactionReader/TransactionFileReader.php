@@ -8,19 +8,20 @@ use App\Collection\TransactionsCollection;
 use App\DTO\SourceFileLineDTO;
 use App\DTO\TransactionReaderRequest\AbstractTransactionReaderRequestDTO;
 use App\DTO\TransactionReaderRequest\TransactionFileReaderRequestDTO;
+use App\Exception\NotFoundTransactionsFileException;
 use App\Factory\TransactionDTOFactory;
 use App\Helper\ValidationHelper;
 
 class TransactionFileReader implements TransactionReaderInterface
 {
-    /**
-     * @param TransactionFileReaderRequestDTO $requestDTO
-     * @return \Generator
-     */
     public function readTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator
     {
-        $startTime = microtime(true);
+//        $startTime = microtime(true);
         $sourceFile = fopen($requestDTO->getTransactionsFileName(), 'r');
+
+        if (!$sourceFile) {
+            throw new NotFoundTransactionsFileException();
+        }
 
         $currentFileLine = 1;
 
@@ -35,7 +36,7 @@ class TransactionFileReader implements TransactionReaderInterface
         }
 
         fclose($sourceFile);
-        dd("Speed: " . microtime(true) - $startTime);
+//        dd("Speed: " . microtime(true) - $startTime);
     }
 
     public function getUserHistoryUpToCurrentTransaction(string $transactionsFileName, int $currentTransactionUserId, int $currentTransactionLine): TransactionsCollection
