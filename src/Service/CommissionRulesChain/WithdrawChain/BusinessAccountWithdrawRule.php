@@ -23,8 +23,8 @@ class BusinessAccountWithdrawRule extends AbstractRule
     protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool
     {
         return (
-            $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw &&
-            $userHistoryUpToCurrentTransaction->getLastTransaction()->getAccountTypeEnum() == AccountTypeEnum::Business
+            $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw
+            && $userHistoryUpToCurrentTransaction->getLastTransaction()->getAccountTypeEnum() == AccountTypeEnum::Business
         );
     }
 }

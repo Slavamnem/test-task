@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 require 'vendor/autoload.php';
 
@@ -20,7 +22,7 @@ try {
     /** @var CommissionCalculationServiceInterface $commissionCalculationService */
     $commissionCalculationService = $container->get(CommissionCalculationService::class);
 
-    foreach ($transactionFileReader->processTransactions(new TransactionFileReaderRequestDTO($argv[1])) as $userHistoryUpToCurrentTransaction) {
+    foreach ($transactionFileReader->readTransactions(new TransactionFileReaderRequestDTO($argv[1])) as $userHistoryUpToCurrentTransaction) {
         $transactionCommission = $commissionCalculationService->calculateCommission($userHistoryUpToCurrentTransaction);
 
         echo(getCommissionOutputFormat($transactionCommission));

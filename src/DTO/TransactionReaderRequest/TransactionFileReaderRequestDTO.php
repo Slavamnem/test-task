@@ -6,9 +6,6 @@ class TransactionFileReaderRequestDTO extends AbstractTransactionReaderRequestDT
 {
     public function __construct(private string $transactionsFileName) {}
 
-    /**
-     * @return string
-     */
     public function getTransactionsFileName(): string
     {
         return $this->transactionsFileName;

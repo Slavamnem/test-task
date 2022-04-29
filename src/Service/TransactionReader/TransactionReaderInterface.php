@@ -6,5 +6,5 @@ use App\DTO\TransactionReaderRequest\AbstractTransactionReaderRequestDTO;
 
 interface TransactionReaderInterface
 {
-    public function processTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator;
+    public function readTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator;
 }

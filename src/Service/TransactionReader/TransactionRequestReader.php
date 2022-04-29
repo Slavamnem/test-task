@@ -2,10 +2,9 @@
 
 namespace App\Service\TransactionReader;
 
-use App\Collection\TransactionsCollection;
 use App\DTO\TransactionReaderRequest\AbstractTransactionReaderRequestDTO;
 
 class TransactionRequestReader implements TransactionReaderInterface
 {
-    public function processTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator {}
+    public function readTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator {}
 }

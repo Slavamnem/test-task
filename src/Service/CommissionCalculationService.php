@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Service;
 
@@ -19,10 +21,10 @@ class CommissionCalculationService implements CommissionCalculationServiceInterf
         //+++TODO cache for currency rates api
         //+++TODO convert to .00
         //+++TODO interface for readers
+        //+++TODO refactoring TransactionsFileReader
 
+        //TODO .env
         //TODO test
-        //TODO refactoring TransactionsFileReader
-
         //TODO notes (russian comments, commented code, code style, task description rules list)
         //TODO documentation
 
@@ -30,6 +32,6 @@ class CommissionCalculationService implements CommissionCalculationServiceInterf
         //const EXCHANGE_RATES_API_URL = 'https://developers.paysera.com/tasks/api/currency-exchange-rates';
         //Money::PRECISION
         //CurrencyEnum::getDefaultCurrency()
-        //Commissions percent: 0.3, 0.03, 0.5; 1000 free; 3 transactions
+        //Commissions percent: 0.3, 0.03, 0.5; 1000 free; 3 transactions free
     }
 }

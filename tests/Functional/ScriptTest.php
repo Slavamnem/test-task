@@ -6,6 +6,7 @@ use App\DTO\ExchangeRatesResponseDTO;
 use App\Enum\CurrencyEnum;
 use App\Http\ExchangeRatesHttpInterface;
 use PHPUnit\Framework\TestCase;
+use DateTime;
 
 class ScriptTest extends TestCase
 {
@@ -14,7 +15,7 @@ class ScriptTest extends TestCase
         /*$exchangeRatesMock = $this->getMockBuilder(ExchangeRatesHttpInterface::class)->getMock();
 
         $exchangeRatesMock->method('getCurrentExchangeRates')->willReturn(
-            new ExchangeRatesResponseDTO(CurrencyEnum::Eur->value, (new \DateTime())->format('Y-m-d'), [
+            new ExchangeRatesResponseDTO(CurrencyEnum::Eur->value, (new DateTime())->format('Y-m-d'), [
                 CurrencyEnum::Eur->value => 1,
                 CurrencyEnum::Usd->value => 1.1497,
                 CurrencyEnum::Jpy->value => 129.53,

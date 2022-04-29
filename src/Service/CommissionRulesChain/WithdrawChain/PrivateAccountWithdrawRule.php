@@ -20,17 +20,27 @@ class PrivateAccountWithdrawRule extends AbstractRule
         $allUserWithdrawsForLastTransactionWeek = $this->getAllUserWithdrawsForLastTransactionWeek($userHistoryUpToCurrentTransaction);
 
         if ($allUserWithdrawsForLastTransactionWeek->getSize() > self::FREE_TRANSACTIONS_PER_WEEK) {
-            return $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney()->multiply(self::COMMISSION_PERCENT / 100)->getValue();
+            return $userHistoryUpToCurrentTransaction
+                ->getLastTransaction()
+                ->getMoney()
+                ->multiply(self::COMMISSION_PERCENT / 100)
+                ->getValue();
         }
 
         $lastTransactionMoney = $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney();
 
-        $lastTransactionMoneyInDefaultCurrency = $this->currencyExchangeService->convertMoneyToDefaultCurrency($userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney());
-        $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = $this->getAllUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency($allUserWithdrawsForLastTransactionWeek);
+        $lastTransactionMoneyInDefaultCurrency = $this->currencyExchangeService->convertMoneyToDefaultCurrency(
+            $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney()
+        );
+        $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = $this->getAllUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency(
+            $allUserWithdrawsForLastTransactionWeek
+        );
         $remainingWithoutCommissionMoneyInDefaultCurrency = (new Money(self::FREE_SUM, CurrencyEnum::getDefaultCurrency()))->minus(
-                $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency->minus($lastTransactionMoneyInDefaultCurrency)
-            );
-        $underCommissionMoneyInDefaultCurrency = $lastTransactionMoneyInDefaultCurrency->minus($remainingWithoutCommissionMoneyInDefaultCurrency);
+            $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency->minus($lastTransactionMoneyInDefaultCurrency)
+        );
+        $underCommissionMoneyInDefaultCurrency = $lastTransactionMoneyInDefaultCurrency->minus(
+            $remainingWithoutCommissionMoneyInDefaultCurrency
+        );
 
         return $this->currencyExchangeService
             ->convertMoney($underCommissionMoneyInDefaultCurrency, $lastTransactionMoney->getCurrency())
@@ -41,8 +51,8 @@ class PrivateAccountWithdrawRule extends AbstractRule
     protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool
     {
         return (
-            $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw &&
-            $userHistoryUpToCurrentTransaction->getLastTransaction()->getAccountTypeEnum() == AccountTypeEnum::Private
+            $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw
+            && $userHistoryUpToCurrentTransaction->getLastTransaction()->getAccountTypeEnum() == AccountTypeEnum::Private
         );
     }
 
@@ -63,13 +73,16 @@ class PrivateAccountWithdrawRule extends AbstractRule
     {
         $allUserWithdrawsForLastTransactionWeek = new TransactionsCollection();
 
-        $lastTransactionWeekStartTimestamp = strtotime('last monday', strtotime($userTransactionsCollection->getLastTransaction()->getDate()->format('Y-m-d')));
+        $lastTransactionWeekStartTimestamp = strtotime(
+            'last monday',
+            strtotime($userTransactionsCollection->getLastTransaction()->getDate()->format('Y-m-d'))
+        );
 
         foreach ($userTransactionsCollection->getTransactions() as $userTransactionDTO) {
             if (
-                $userTransactionDTO->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw &&
-                $userTransactionDTO->getDate()->getTimestamp() >= $lastTransactionWeekStartTimestamp)
-            {
+                $userTransactionDTO->getTransactionTypeEnum() == TransactionTypeEnum::Withdraw
+                && $userTransactionDTO->getDate()->getTimestamp() >= $lastTransactionWeekStartTimestamp
+            ) {
                 $allUserWithdrawsForLastTransactionWeek->addTransaction($userTransactionDTO);
             }
         }

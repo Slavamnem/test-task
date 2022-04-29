@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Service\TransactionReader;
 
@@ -15,24 +17,25 @@ class TransactionFileReader implements TransactionReaderInterface
      * @param TransactionFileReaderRequestDTO $requestDTO
      * @return \Generator
      */
-    public function processTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator
+    public function readTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator
     {
-//        $startTime = microtime(true);
+        $startTime = microtime(true);
         $sourceFile = fopen($requestDTO->getTransactionsFileName(), 'r');
 
         $currentFileLine = 1;
 
-        while (($sourceFileLine = fgetcsv($sourceFile)) !== FALSE) {
+        while (($sourceFileLine = fgetcsv($sourceFile)) !== false) {
             $sourceFileLineDTO = new SourceFileLineDTO($sourceFileLine[0], (int)$sourceFileLine[1], $sourceFileLine[2], $sourceFileLine[3], (float)$sourceFileLine[4], $sourceFileLine[5]);
             ValidationHelper::validateAndThrowException($sourceFileLineDTO);
 
+            //For each transaction, I read the file again to get the current transaction's user history, ignoring other transactions. This keeps the memory from overflowing.
             yield $this->getUserHistoryUpToCurrentTransaction($requestDTO->getTransactionsFileName(), $sourceFileLineDTO->getUserId(), $currentFileLine);
 
             $currentFileLine++;
         }
 
         fclose($sourceFile);
-//        dd("Speed: " . microtime(true) - $startTime);
+        dd("Speed: " . microtime(true) - $startTime);
     }
 
     public function getUserHistoryUpToCurrentTransaction(string $transactionsFileName, int $currentTransactionUserId, int $currentTransactionLine): TransactionsCollection
@@ -43,8 +46,15 @@ class TransactionFileReader implements TransactionReaderInterface
 
         $fileLine = 1;
 
-        while (($sourceFileLine = fgetcsv($transactionsFile)) !== FALSE) {
-            $sourceFileLineDTO = new SourceFileLineDTO($sourceFileLine[0], (int)$sourceFileLine[1], $sourceFileLine[2], $sourceFileLine[3], (float)$sourceFileLine[4], $sourceFileLine[5]);
+        while (($sourceFileLine = fgetcsv($transactionsFile)) !== false) {
+            $sourceFileLineDTO = new SourceFileLineDTO(
+                $sourceFileLine[0],
+                (int)$sourceFileLine[1],
+                $sourceFileLine[2],
+                $sourceFileLine[3],
+                (float)$sourceFileLine[4],
+                $sourceFileLine[5]
+            );
 
             if ($sourceFileLineDTO->getUserId() != $currentTransactionUserId) {
                 $fileLine++;
