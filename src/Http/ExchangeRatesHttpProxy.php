@@ -10,7 +10,9 @@ class ExchangeRatesHttpProxy implements ExchangeRatesHttpInterface
 {
     private static $cachedExchangeRatesResponse;
 
-    public function __construct(private ExchangeRatesHttp $exchangeRatesHttp) {}
+    public function __construct(private ExchangeRatesHttp $exchangeRatesHttp)
+    {
+    }
 
     public function getCurrentExchangeRates(): ExchangeRatesResponseDTO
     {

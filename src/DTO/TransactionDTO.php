@@ -17,7 +17,8 @@ class TransactionDTO
         private AccountTypeEnum $accountTypeEnum,
         private TransactionTypeEnum $transactionTypeEnum,
         private Money $money
-    ) {}
+    ) {
+    }
 
     public function getDate(): DateTime
     {

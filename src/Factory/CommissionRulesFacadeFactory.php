@@ -15,18 +15,24 @@ use App\Service\CurrencyExchangeServiceInterface;
 
 class CommissionRulesFacadeFactory
 {
+    private static CommissionRulesFacade $commissionRulesFacade;
+
     public function __construct(private CurrencyExchangeServiceInterface $currencyExchangeService) {}
 
     public function makeCommissionRulesFacade(): CommissionRulesFacadeInterface
     {
-        return new CommissionRulesFacade([
-            TransactionTypeEnum::Deposit->value => new CommissionRulesChain(
-                new DefaultDepositRule($this->currencyExchangeService)
-            ),
-            TransactionTypeEnum::Withdraw->value => new CommissionRulesChain(
-                (new PrivateAccountWithdrawRule($this->currencyExchangeService))
-                    ->setNextRule(new BusinessAccountWithdrawRule($this->currencyExchangeService))
-            )
-        ]);
+        if (empty(self::$commissionRulesFacade)) {
+            self::$commissionRulesFacade = new CommissionRulesFacade([
+                TransactionTypeEnum::Deposit->value => new CommissionRulesChain(
+                    new DefaultDepositRule($this->currencyExchangeService)
+                ),
+                TransactionTypeEnum::Withdraw->value => new CommissionRulesChain(
+                    (new PrivateAccountWithdrawRule($this->currencyExchangeService))
+                        ->setNextRule(new BusinessAccountWithdrawRule($this->currencyExchangeService))
+                )
+            ]);
+        }
+
+        return self::$commissionRulesFacade;
     }
 }

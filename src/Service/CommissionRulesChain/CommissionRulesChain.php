@@ -8,7 +8,9 @@ use App\Collection\TransactionsCollection;
 
 class CommissionRulesChain implements CommissionRulesChainInterface
 {
-    public function __construct(protected AbstractRule $firstRuleOfChain) {}
+    public function __construct(protected AbstractRule $firstRuleOfChain)
+    {
+    }
 
     public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
     {

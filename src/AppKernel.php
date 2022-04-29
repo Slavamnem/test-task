@@ -9,19 +9,13 @@ use Symfony\Component\HttpKernel\Kernel;
 
 final class AppKernel extends Kernel
 {
-    /**
-     * In more complex app, add bundles here
-     */
     public function registerBundles(): array
     {
         return [];
     }
 
-    /**
-     * Load all services
-     */
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        $loader->load(__DIR__ . "/../config/{$_ENV['ENV']}_services.yml");
+        $loader->load(__DIR__."/../config/{$this->environment}_services.yml");
     }
 }

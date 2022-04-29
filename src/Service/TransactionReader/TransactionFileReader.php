@@ -7,7 +7,6 @@ namespace App\Service\TransactionReader;
 use App\Collection\TransactionsCollection;
 use App\DTO\SourceFileLineDTO;
 use App\DTO\TransactionReaderRequest\AbstractTransactionReaderRequestDTO;
-use App\DTO\TransactionReaderRequest\TransactionFileReaderRequestDTO;
 use App\Exception\NotFoundTransactionsFileException;
 use App\Factory\TransactionDTOFactory;
 use App\Helper\ValidationHelper;

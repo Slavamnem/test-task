@@ -8,5 +8,7 @@ use App\DTO\TransactionReaderRequest\AbstractTransactionReaderRequestDTO;
 
 class TransactionRequestReader implements TransactionReaderInterface
 {
-    public function readTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator {}
+    public function readTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator
+    {
+    }
 }

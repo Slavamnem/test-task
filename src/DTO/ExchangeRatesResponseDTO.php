@@ -6,7 +6,9 @@ namespace App\DTO;
 
 class ExchangeRatesResponseDTO
 {
-    public function __construct(private string $base, private string $date, private array $rates) {}
+    public function __construct(private string $base, private string $date, private array $rates)
+    {
+    }
 
     public function getBase(): string
     {

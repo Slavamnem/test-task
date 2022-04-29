@@ -6,5 +6,4 @@ namespace App\DTO\TransactionReaderRequest;
 
 class TransactionRequestReaderRequestDTO extends AbstractTransactionReaderRequestDTO
 {
-
 }

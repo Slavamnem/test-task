@@ -6,5 +6,4 @@ namespace App\Exception;
 
 class NotFoundExchangeRateException extends \Exception
 {
-
 }
