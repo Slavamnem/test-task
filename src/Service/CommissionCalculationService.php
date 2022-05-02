@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Collection\TransactionsCollection;
 use App\Factory\CommissionRulesFacadeFactory;
+use App\VO\Money;
 
 class CommissionCalculationService implements CommissionCalculationServiceInterface
 {
@@ -13,7 +14,7 @@ class CommissionCalculationService implements CommissionCalculationServiceInterf
     {
     }
 
-    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
+    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
     {
         return $this->commissionRulesFacadeFactory->makeCommissionRulesFacade()->calculateCommission($userHistoryUpToCurrentTransaction);
 

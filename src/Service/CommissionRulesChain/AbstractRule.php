@@ -7,6 +7,7 @@ namespace App\Service\CommissionRulesChain;
 use App\Collection\TransactionsCollection;
 use App\Exception\NotFoundAnyCommissionRuleException;
 use App\Service\MoneyCalculator\MoneyCalculatorInterface;
+use App\VO\Money;
 
 abstract class AbstractRule
 {
@@ -14,7 +15,7 @@ abstract class AbstractRule
 
     public function __construct(protected MoneyCalculatorInterface $moneyCalculator) {}
 
-    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
+    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
     {
         if ($this->isAppropriateRule($userHistoryUpToCurrentTransaction)) {
             return $this->getLastUserTransactionCommission($userHistoryUpToCurrentTransaction);
@@ -31,7 +32,7 @@ abstract class AbstractRule
         return $this;
     }
 
-    abstract protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float;
+    abstract protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money;
 
     abstract protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool;
 }

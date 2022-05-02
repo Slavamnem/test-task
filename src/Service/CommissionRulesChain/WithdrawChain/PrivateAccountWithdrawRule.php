@@ -28,17 +28,17 @@ class PrivateAccountWithdrawRule extends AbstractRule
         parent::__construct($moneyCalculator);
     }
 
-    protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
+    protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
     {
         $allUserWithdrawsForLastTransactionWeek = $this->getAllUserWithdrawsForLastTransactionWeek($userHistoryUpToCurrentTransaction);
 
         if ($allUserWithdrawsForLastTransactionWeek->getSize() > $this->freeTransactionPerWeek) {
-            return $this->moneyCalculator
-                ->getPercent(
+            return $this->moneyCalculator->roundUp(
+                $this->moneyCalculator->getPercent(
                     $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney(),
                     $this->commissionPercent
                 )
-                ->getValue();
+            );
         }
 
         $lastTransactionMoney = $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney();
@@ -64,12 +64,12 @@ class PrivateAccountWithdrawRule extends AbstractRule
             $remainingWithoutCommissionMoneyInDefaultCurrency
         );
 
-        return $this->moneyCalculator
-            ->getPercent(
+        return $this->moneyCalculator->roundUp(
+            $this->moneyCalculator->getPercent(
                 $this->currencyExchangeService->convertMoney($underCommissionMoneyInDefaultCurrency, $lastTransactionMoney->getCurrency()),
                 $this->commissionPercent
             )
-            ->getValue();
+        );
     }
 
     protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool

@@ -16,5 +16,7 @@ interface MoneyCalculatorInterface
 
     public function divide(Money $money, float $num): Money;
 
-    public function getPercent(Money $money, float $percentage): Money;
+    public function getPercent(Money $money, float $percent): Money;
+
+    public function roundUp(Money $money): Money;
 }

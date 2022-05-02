@@ -53,11 +53,33 @@ class MoneyBCMathCalculator implements MoneyCalculatorInterface
         return new Money($newValue, $money->getCurrency());
     }
 
-    public function getPercent(Money $money, float $percentage): Money
+    public function getPercent(Money $money, float $percent): Money
     {
         $newValue = (float)bcdiv(
-            bcmul((string)$money->getValue(), (string)$percentage, $this->precision),
+            bcmul((string)$money->getValue(), (string)$percent, $this->precision),
             "100",
+            $this->precision
+        );
+
+        return new Money($newValue, $money->getCurrency());
+    }
+
+    public function roundUp(Money $money): Money
+    {
+        $currencyPrecision = $money->getCurrency()->getPrecision();
+
+        $oldValue = $money->getValue();
+
+        // analog of: ceil($oldValue * (10 ** $currencyPrecision)) / (10 ** $currencyPrecision);
+        $newValue = (float)bcdiv(
+            (string)ceil(
+                (float)bcmul(
+                    (string)$oldValue,
+                    bcpow("10", (string)$currencyPrecision),
+                    $this->precision
+                )
+            ),
+            bcpow("10", (string)$currencyPrecision),
             $this->precision
         );
 

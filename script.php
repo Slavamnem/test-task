@@ -12,8 +12,7 @@ use App\Service\CommissionCalculationServiceInterface;
 use App\Service\CommissionCalculationService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Dotenv\Dotenv;
-
-const COMMISSION_PRECISION = 2;
+use App\VO\Money;
 
 $container = initializeContainer($argv);
 
@@ -41,7 +40,7 @@ function initializeContainer($argv): ContainerInterface
     return $kernel->getContainer();
 }
 
-function getCommissionOutputFormat(float $commission): string
+function getCommissionOutputFormat(Money $commission): string
 {
-    return number_format($commission, COMMISSION_PRECISION, thousands_separator: '') . PHP_EOL;
+    return number_format($commission->getValue(), $commission->getCurrency()->getPrecision(), thousands_separator: '') . PHP_EOL;
 }

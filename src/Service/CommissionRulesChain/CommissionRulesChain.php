@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\CommissionRulesChain;
 
 use App\Collection\TransactionsCollection;
+use App\VO\Money;
 
 class CommissionRulesChain implements CommissionRulesChainInterface
 {
@@ -12,7 +13,7 @@ class CommissionRulesChain implements CommissionRulesChainInterface
     {
     }
 
-    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
+    public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
     {
         return $this->firstRuleOfChain->calculateCommission($userHistoryUpToCurrentTransaction);
     }

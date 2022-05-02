@@ -9,6 +9,7 @@ use App\Enum\AccountTypeEnum;
 use App\Enum\TransactionTypeEnum;
 use App\Service\CommissionRulesChain\AbstractRule;
 use App\Service\MoneyCalculator\MoneyCalculatorInterface;
+use App\VO\Money;
 
 class BusinessAccountWithdrawRule extends AbstractRule
 {
@@ -21,14 +22,14 @@ class BusinessAccountWithdrawRule extends AbstractRule
         parent::__construct($moneyCalculator);
     }
 
-    protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
+    protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
     {
-        return $this->moneyCalculator
-            ->getPercent(
+        return $this->moneyCalculator->roundUp(
+            $this->moneyCalculator->getPercent(
                 $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney(),
                 $this->commissionPercent
             )
-            ->getValue();
+        );
     }
 
     protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool
