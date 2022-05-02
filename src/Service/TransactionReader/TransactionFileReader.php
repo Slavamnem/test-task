@@ -27,26 +27,34 @@ class TransactionFileReader implements TransactionReaderInterface
         while (($sourceFileLine = fgetcsv($sourceFile)) !== false) {
             $sourceFileLineDTO = new SourceFileLineDTO(
                 $sourceFileLine[0],
-                (int)$sourceFileLine[1],
+                (int) $sourceFileLine[1],
                 $sourceFileLine[2],
                 $sourceFileLine[3],
-                (float)$sourceFileLine[4],
+                (float) $sourceFileLine[4],
                 $sourceFileLine[5]
             );
             ValidationHelper::validateAndThrowException($sourceFileLineDTO);
 
-            //For each transaction, I read the file again to get the current transaction's user history, ignoring other transactions. This keeps the memory from overflowing.
-            yield $this->getUserHistoryUpToCurrentTransaction($requestDTO->getTransactionsFilePath(), $sourceFileLineDTO->getUserId(), $currentFileLine);
+            //For each transaction, I read the file again to get the current transaction's user history, ignoring other transactions.
+            //This keeps the memory from overflowing.
+            yield $this->getUserHistoryUpToCurrentTransaction(
+                $requestDTO->getTransactionsFilePath(),
+                $sourceFileLineDTO->getUserId(),
+                $currentFileLine
+            );
 
             $currentFileLine++;
         }
 
         fclose($sourceFile);
-//        dd("Speed: " . microtime(true) - $startTime);
+//        dd('Speed: ' . microtime(true) - $startTime);
     }
 
-    public function getUserHistoryUpToCurrentTransaction(string $transactionsFilePath, int $currentTransactionUserId, int $currentTransactionLine): TransactionsCollection
-    {
+    public function getUserHistoryUpToCurrentTransaction(
+        string $transactionsFilePath,
+        int $currentTransactionUserId,
+        int $currentTransactionLine
+    ): TransactionsCollection {
         $userHistoryUpToCurrentTransaction = new TransactionsCollection();
 
         $transactionsFile = fopen($transactionsFilePath, 'r');
@@ -56,21 +64,23 @@ class TransactionFileReader implements TransactionReaderInterface
         while (($sourceFileLine = fgetcsv($transactionsFile)) !== false) {
             $sourceFileLineDTO = new SourceFileLineDTO(
                 $sourceFileLine[0],
-                (int)$sourceFileLine[1],
+                (int) $sourceFileLine[1],
                 $sourceFileLine[2],
                 $sourceFileLine[3],
-                (float)$sourceFileLine[4],
+                (float) $sourceFileLine[4],
                 $sourceFileLine[5]
             );
 
-            if ($sourceFileLineDTO->getUserId() != $currentTransactionUserId) {
+            if ($sourceFileLineDTO->getUserId() !== $currentTransactionUserId) {
                 $fileLine++;
                 continue;
             }
 
-            $userHistoryUpToCurrentTransaction->addTransaction(TransactionDTOFactory::createTransactionDTOFromSourceFileLineDTO($sourceFileLineDTO));
+            $userHistoryUpToCurrentTransaction->addTransaction(
+                TransactionDTOFactory::createTransactionDTOFromSourceFileLineDTO($sourceFileLineDTO)
+            );
 
-            if ($fileLine == $currentTransactionLine) {
+            if ($fileLine === $currentTransactionLine) {
                 break;
             }
 

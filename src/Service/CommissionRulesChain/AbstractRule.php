@@ -13,7 +13,9 @@ abstract class AbstractRule
 {
     protected AbstractRule $nextRule;
 
-    public function __construct(protected MoneyCalculatorInterface $moneyCalculator) {}
+    public function __construct(protected MoneyCalculatorInterface $moneyCalculator)
+    {
+    }
 
     public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
     {
@@ -29,6 +31,7 @@ abstract class AbstractRule
     public function setNextRule(AbstractRule $nextRule): AbstractRule
     {
         $this->nextRule = $nextRule;
+
         return $this;
     }
 

@@ -16,6 +16,7 @@ class TransactionsCollection
     public function addTransaction(TransactionDTO $transactionDTO): TransactionsCollection
     {
         $this->transactions[] = $transactionDTO;
+
         return $this;
     }
 

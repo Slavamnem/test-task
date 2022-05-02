@@ -16,9 +16,9 @@ class CommissionCalculationService implements CommissionCalculationServiceInterf
 
     public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
     {
-        return $this->commissionRulesFacadeFactory->makeCommissionRulesFacade()->calculateCommission($userHistoryUpToCurrentTransaction);
-
-        //TODO notes (comments(FileReader and here), commented code(FileReader), code style, psr-12)
-        //TODO documentation
+        return $this->commissionRulesFacadeFactory
+            ->makeCommissionRulesFacade()
+            ->calculateCommission($userHistoryUpToCurrentTransaction)
+        ;
     }
 }

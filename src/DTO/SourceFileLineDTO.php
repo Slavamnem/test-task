@@ -59,8 +59,14 @@ class SourceFileLineDTO
      */
     private string $currency;
 
-    public function __construct(string $date, int $userId, string $accountType, string $transactionType, float $amount, string $currency)
-    {
+    public function __construct(
+        string $date,
+        int $userId,
+        string $accountType,
+        string $transactionType,
+        float $amount,
+        string $currency,
+    ) {
         $this->date = $date;
         $this->userId = $userId;
         $this->accountType = $accountType;

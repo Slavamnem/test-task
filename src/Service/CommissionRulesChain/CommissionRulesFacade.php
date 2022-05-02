@@ -21,6 +21,7 @@ class CommissionRulesFacade implements CommissionRulesFacadeInterface
 
     public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
     {
-        return $this->rulesChains[$userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum()->value]->calculateCommission($userHistoryUpToCurrentTransaction);
+        return $this->rulesChains[$userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum()->value]
+            ->calculateCommission($userHistoryUpToCurrentTransaction);
     }
 }

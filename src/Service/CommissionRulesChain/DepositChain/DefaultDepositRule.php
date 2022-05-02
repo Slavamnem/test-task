@@ -16,9 +16,9 @@ class DefaultDepositRule extends AbstractRule
 
     public function __construct(protected MoneyCalculatorInterface $moneyCalculator)
     {
-        $this->commissionPercent = (float)$_ENV['DEPOSIT_COMMISSION_PERCENT'];
-
         parent::__construct($moneyCalculator);
+
+        $this->commissionPercent = (float) $_ENV['DEPOSIT_COMMISSION_PERCENT'];
     }
 
     protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
@@ -33,6 +33,6 @@ class DefaultDepositRule extends AbstractRule
 
     protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool
     {
-        return $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() == TransactionTypeEnum::Deposit;
+        return $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() === TransactionTypeEnum::Deposit;
     }
 }

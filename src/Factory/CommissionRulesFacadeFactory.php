@@ -18,7 +18,11 @@ class CommissionRulesFacadeFactory
 {
     private static CommissionRulesFacade $commissionRulesFacade;
 
-    public function __construct(private MoneyCalculatorInterface $moneyCalculator, private CurrencyExchangeServiceInterface $currencyExchangeService) {}
+    public function __construct(
+        private MoneyCalculatorInterface $moneyCalculator,
+        private CurrencyExchangeServiceInterface $currencyExchangeService
+    ) {
+    }
 
     public function makeCommissionRulesFacade(): CommissionRulesFacadeInterface
     {
@@ -30,7 +34,7 @@ class CommissionRulesFacadeFactory
                 TransactionTypeEnum::Withdraw->value => new CommissionRulesChain(
                     (new PrivateAccountWithdrawRule($this->moneyCalculator, $this->currencyExchangeService))
                         ->setNextRule(new BusinessAccountWithdrawRule($this->moneyCalculator))
-                )
+                ),
             ]);
         }
 

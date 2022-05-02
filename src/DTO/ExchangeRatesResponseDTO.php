@@ -27,7 +27,7 @@ class ExchangeRatesResponseDTO
 
     public function hasRate(string $currencyCode): bool
     {
-        return isset($this->rates[$currencyCode]);
+        return !empty($this->rates[$currencyCode]);
     }
 
     public function getRate(string $currencyCode): float

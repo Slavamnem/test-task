@@ -15,8 +15,10 @@ class CurrencyExchangeService implements CurrencyExchangeServiceInterface
 {
     private const NOT_FOUND_EXCHANGE_RATE_MESSAGE = 'Exchange rate for currency: %s not found!';
 
-    public function __construct(private ExchangeRatesHttpInterface $exchangeRatesHttp, private MoneyCalculatorInterface $moneyCalculator)
-    {
+    public function __construct(
+        private ExchangeRatesHttpInterface $exchangeRatesHttp,
+        private MoneyCalculatorInterface $moneyCalculator
+    ) {
     }
 
     public function convertMoney(Money $money, CurrencyEnum $newCurrency): Money
