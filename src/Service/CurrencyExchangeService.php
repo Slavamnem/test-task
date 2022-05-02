@@ -8,13 +8,14 @@ use App\DTO\ExchangeRatesResponseDTO;
 use App\Enum\CurrencyEnum;
 use App\Exception\NotFoundExchangeRateException;
 use App\Http\ExchangeRatesHttpInterface;
+use App\Service\MoneyCalculator\MoneyCalculatorInterface;
 use App\VO\Money;
 
 class CurrencyExchangeService implements CurrencyExchangeServiceInterface
 {
     private const NOT_FOUND_EXCHANGE_RATE_MESSAGE = 'Exchange rate for currency: %s not found!';
 
-    public function __construct(private ExchangeRatesHttpInterface $exchangeRatesHttp)
+    public function __construct(private ExchangeRatesHttpInterface $exchangeRatesHttp, private MoneyCalculatorInterface $moneyCalculator)
     {
     }
 
@@ -29,8 +30,14 @@ class CurrencyExchangeService implements CurrencyExchangeServiceInterface
         $this->checkExchangeRateExistence($exchangeRates, $money->getCurrency());
         $this->checkExchangeRateExistence($exchangeRates, $newCurrency);
 
-        $moneyInBaseCurrency = new Money($money->divide($exchangeRates->getRate($money->getCurrency()->value))->getValue(), CurrencyEnum::from($exchangeRates->getBase()));
-        $moneyInNewCurrency = new Money($moneyInBaseCurrency->multiply($exchangeRates->getRate($newCurrency->value))->getValue(), $newCurrency);
+        $moneyInBaseCurrency = new Money(
+            $this->moneyCalculator->divide($money, $exchangeRates->getRate($money->getCurrency()->value))->getValue(),
+            CurrencyEnum::from($exchangeRates->getBase())
+        );
+        $moneyInNewCurrency = new Money(
+            $this->moneyCalculator->multiply($moneyInBaseCurrency, $exchangeRates->getRate($newCurrency->value))->getValue(),
+            $newCurrency
+        );
 
         return $moneyInNewCurrency;
     }

@@ -16,7 +16,7 @@ class TransactionFileReader implements TransactionReaderInterface
     public function readTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator
     {
 //        $startTime = microtime(true);
-        $sourceFile = fopen($requestDTO->getTransactionsFileName(), 'r');
+        $sourceFile = fopen($requestDTO->getTransactionsFilePath(), 'r');
 
         if (!$sourceFile) {
             throw new NotFoundTransactionsFileException();
@@ -25,11 +25,18 @@ class TransactionFileReader implements TransactionReaderInterface
         $currentFileLine = 1;
 
         while (($sourceFileLine = fgetcsv($sourceFile)) !== false) {
-            $sourceFileLineDTO = new SourceFileLineDTO($sourceFileLine[0], (int)$sourceFileLine[1], $sourceFileLine[2], $sourceFileLine[3], (float)$sourceFileLine[4], $sourceFileLine[5]);
+            $sourceFileLineDTO = new SourceFileLineDTO(
+                $sourceFileLine[0],
+                (int)$sourceFileLine[1],
+                $sourceFileLine[2],
+                $sourceFileLine[3],
+                (float)$sourceFileLine[4],
+                $sourceFileLine[5]
+            );
             ValidationHelper::validateAndThrowException($sourceFileLineDTO);
 
             //For each transaction, I read the file again to get the current transaction's user history, ignoring other transactions. This keeps the memory from overflowing.
-            yield $this->getUserHistoryUpToCurrentTransaction($requestDTO->getTransactionsFileName(), $sourceFileLineDTO->getUserId(), $currentFileLine);
+            yield $this->getUserHistoryUpToCurrentTransaction($requestDTO->getTransactionsFilePath(), $sourceFileLineDTO->getUserId(), $currentFileLine);
 
             $currentFileLine++;
         }
@@ -38,11 +45,11 @@ class TransactionFileReader implements TransactionReaderInterface
 //        dd("Speed: " . microtime(true) - $startTime);
     }
 
-    public function getUserHistoryUpToCurrentTransaction(string $transactionsFileName, int $currentTransactionUserId, int $currentTransactionLine): TransactionsCollection
+    public function getUserHistoryUpToCurrentTransaction(string $transactionsFilePath, int $currentTransactionUserId, int $currentTransactionLine): TransactionsCollection
     {
         $userHistoryUpToCurrentTransaction = new TransactionsCollection();
 
-        $transactionsFile = fopen($transactionsFileName, 'r');
+        $transactionsFile = fopen($transactionsFilePath, 'r');
 
         $fileLine = 1;
 

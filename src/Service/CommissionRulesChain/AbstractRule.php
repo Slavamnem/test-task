@@ -6,13 +6,13 @@ namespace App\Service\CommissionRulesChain;
 
 use App\Collection\TransactionsCollection;
 use App\Exception\NotFoundAnyCommissionRuleException;
-use App\Service\CurrencyExchangeServiceInterface;
+use App\Service\MoneyCalculator\MoneyCalculatorInterface;
 
 abstract class AbstractRule
 {
     protected AbstractRule $nextRule;
 
-    public function __construct(protected CurrencyExchangeServiceInterface $currencyExchangeService) {}
+    public function __construct(protected MoneyCalculatorInterface $moneyCalculator) {}
 
     public function calculateCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
     {

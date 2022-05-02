@@ -10,6 +10,7 @@ use App\Enum\CurrencyEnum;
 use App\Enum\TransactionTypeEnum;
 use App\Service\CommissionRulesChain\AbstractRule;
 use App\Service\CurrencyExchangeServiceInterface;
+use App\Service\MoneyCalculator\MoneyCalculatorInterface;
 use App\VO\Money;
 
 class PrivateAccountWithdrawRule extends AbstractRule
@@ -18,13 +19,13 @@ class PrivateAccountWithdrawRule extends AbstractRule
     private float $commissionPercent;
     private int $freeSum;
 
-    public function __construct(protected CurrencyExchangeServiceInterface $currencyExchangeService)
+    public function __construct(protected MoneyCalculatorInterface $moneyCalculator, private CurrencyExchangeServiceInterface $currencyExchangeService)
     {
         $this->freeTransactionPerWeek = (int)$_ENV['WITHDRAW_PRIVATE_ACCOUNT_FREE_TRANSACTIONS_PER_WEEK'];
         $this->commissionPercent = (float)$_ENV['WITHDRAW_PRIVATE_ACCOUNT_COMMISSION_PERCENT'];
         $this->freeSum = (int)$_ENV['WITHDRAW_PRIVATE_ACCOUNT_FREE_SUM'];
 
-        parent::__construct($this->currencyExchangeService);
+        parent::__construct($moneyCalculator);
     }
 
     protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): float
@@ -32,10 +33,11 @@ class PrivateAccountWithdrawRule extends AbstractRule
         $allUserWithdrawsForLastTransactionWeek = $this->getAllUserWithdrawsForLastTransactionWeek($userHistoryUpToCurrentTransaction);
 
         if ($allUserWithdrawsForLastTransactionWeek->getSize() > $this->freeTransactionPerWeek) {
-            return $userHistoryUpToCurrentTransaction
-                ->getLastTransaction()
-                ->getMoney()
-                ->multiply($this->commissionPercent / 100)
+            return $this->moneyCalculator
+                ->getPercent(
+                    $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney(),
+                    $this->commissionPercent
+                )
                 ->getValue();
         }
 
@@ -44,19 +46,29 @@ class PrivateAccountWithdrawRule extends AbstractRule
         $lastTransactionMoneyInDefaultCurrency = $this->currencyExchangeService->convertMoneyToDefaultCurrency(
             $userHistoryUpToCurrentTransaction->getLastTransaction()->getMoney()
         );
+
         $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = $this->getAllUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency(
             $allUserWithdrawsForLastTransactionWeek
         );
-        $remainingWithoutCommissionMoneyInDefaultCurrency = (new Money($this->freeSum, CurrencyEnum::getDefaultCurrency()))->minus(
-            $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency->minus($lastTransactionMoneyInDefaultCurrency)
+
+        $remainingWithoutCommissionMoneyInDefaultCurrency = $this->moneyCalculator->minus(
+            (new Money($this->freeSum, CurrencyEnum::getDefaultCurrency())),
+            $this->moneyCalculator->minus(
+                $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency,
+                $lastTransactionMoneyInDefaultCurrency
+            )
         );
-        $underCommissionMoneyInDefaultCurrency = $lastTransactionMoneyInDefaultCurrency->minus(
+
+        $underCommissionMoneyInDefaultCurrency = $this->moneyCalculator->minus(
+            $lastTransactionMoneyInDefaultCurrency,
             $remainingWithoutCommissionMoneyInDefaultCurrency
         );
 
-        return $this->currencyExchangeService
-            ->convertMoney($underCommissionMoneyInDefaultCurrency, $lastTransactionMoney->getCurrency())
-            ->multiply($this->commissionPercent / 100)
+        return $this->moneyCalculator
+            ->getPercent(
+                $this->currencyExchangeService->convertMoney($underCommissionMoneyInDefaultCurrency, $lastTransactionMoney->getCurrency()),
+                $this->commissionPercent
+            )
             ->getValue();
     }
 
@@ -73,7 +85,8 @@ class PrivateAccountWithdrawRule extends AbstractRule
         $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = new Money(0.0, CurrencyEnum::getDefaultCurrency());
 
         foreach ($allUserWithdrawsForLastTransactionWeek->getTransactions() as $transactionDTO) {
-            $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency->add(
+            $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = $this->moneyCalculator->add(
+                $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency,
                 $this->currencyExchangeService->convertMoneyToDefaultCurrency($transactionDTO->getMoney())
             );
         }

@@ -6,12 +6,12 @@ namespace App\DTO\TransactionReaderRequest;
 
 class TransactionFileReaderRequestDTO extends AbstractTransactionReaderRequestDTO
 {
-    public function __construct(private string $transactionsFileName)
+    public function __construct(private string $transactionsFilePath)
     {
     }
 
-    public function getTransactionsFileName(): string
+    public function getTransactionsFilePath(): string
     {
-        return $this->transactionsFileName;
+        return $this->transactionsFilePath;
     }
 }

@@ -12,23 +12,24 @@ use App\Service\CommissionRulesChain\DepositChain\DefaultDepositRule;
 use App\Service\CommissionRulesChain\WithdrawChain\BusinessAccountWithdrawRule;
 use App\Service\CommissionRulesChain\WithdrawChain\PrivateAccountWithdrawRule;
 use App\Service\CurrencyExchangeServiceInterface;
+use App\Service\MoneyCalculator\MoneyCalculatorInterface;
 
 class CommissionRulesFacadeFactory
 {
     private static CommissionRulesFacade $commissionRulesFacade;
 
-    public function __construct(private CurrencyExchangeServiceInterface $currencyExchangeService) {}
+    public function __construct(private MoneyCalculatorInterface $moneyCalculator, private CurrencyExchangeServiceInterface $currencyExchangeService) {}
 
     public function makeCommissionRulesFacade(): CommissionRulesFacadeInterface
     {
         if (empty(self::$commissionRulesFacade)) {
             self::$commissionRulesFacade = new CommissionRulesFacade([
                 TransactionTypeEnum::Deposit->value => new CommissionRulesChain(
-                    new DefaultDepositRule($this->currencyExchangeService)
+                    new DefaultDepositRule($this->moneyCalculator)
                 ),
                 TransactionTypeEnum::Withdraw->value => new CommissionRulesChain(
-                    (new PrivateAccountWithdrawRule($this->currencyExchangeService))
-                        ->setNextRule(new BusinessAccountWithdrawRule($this->currencyExchangeService))
+                    (new PrivateAccountWithdrawRule($this->moneyCalculator, $this->currencyExchangeService))
+                        ->setNextRule(new BusinessAccountWithdrawRule($this->moneyCalculator))
                 )
             ]);
         }

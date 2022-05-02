@@ -16,6 +16,11 @@ services:
   App\Service\TransactionReader\TransactionFileReader:
     public: true
 
+  App\Service\MoneyCalculator\MoneyCalculatorInterface: '@App\Service\MoneyCalculator\MoneyBCMathCalculator'
+  App\Service\MoneyCalculator\MoneyBCMathCalculator:
+    arguments:
+      $precision: '%env(MONEY_PRECISION)%'
+
   App\Http\ExchangeRatesHttpInterface: '@App\Http\ExchangeRatesHttpTestProxy'
   App\Http\ExchangeRatesHttp:
     arguments:

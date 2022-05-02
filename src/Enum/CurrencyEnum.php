@@ -13,7 +13,6 @@ enum CurrencyEnum: string
     case Usd = 'USD';
     case Eur = 'EUR';
     case Jpy = 'JPY';
-    case Uah = 'UAH';
 
     public static function getDefaultCurrency(): CurrencyEnum
     {
