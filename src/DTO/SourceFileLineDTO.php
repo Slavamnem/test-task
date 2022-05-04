@@ -25,12 +25,20 @@ class SourceFileLineDTO
     /**
      * @Assert\NotBlank(message="SourceFileLineDTO AccountType field is missing")
      * @Assert\Type(type="string")
+     * @Assert\Choice(
+     *     message="SourceFileLineDTO accountType not in enum scope",
+     *     callback={"App\Enum\AccountTypeEnum", "getValues"}
+     * )
      */
     private string $accountType;
 
     /**
      * @Assert\NotBlank(message="SourceFileLineDTO TransactionType field is missing")
      * @Assert\Type(type="string")
+     * @Assert\Choice(
+     *     message="SourceFileLineDTO transactionType not in enum scope",
+     *     callback={"App\Enum\TransactionTypeEnum", "getValues"}
+     * )
      */
     private string $transactionType;
 
@@ -44,6 +52,10 @@ class SourceFileLineDTO
     /**
      * @Assert\NotBlank(message="SourceFileLineDTO currency field is missing")
      * @Assert\Type(type="string")
+     * @Assert\Choice(
+     *     message="SourceFileLineDTO currency not in enum scope",
+     *     callback={"App\Enum\CurrencyEnum", "getValues"}
+     * )
      */
     private string $currency;
 

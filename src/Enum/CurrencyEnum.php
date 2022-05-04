@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Enum;
 
+use App\Util\EnumToArrayTrait;
+
 enum CurrencyEnum: string
 {
+    use EnumToArrayTrait;
+
     case Usd = 'USD';
     case Eur = 'EUR';
     case Jpy = 'JPY';
