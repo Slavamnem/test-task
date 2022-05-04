@@ -13,13 +13,9 @@ use App\VO\Money;
 
 class BusinessAccountWithdrawRule extends AbstractRule
 {
-    private float $commissionPercent;
-
-    public function __construct(protected MoneyCalculatorInterface $moneyCalculator)
+    public function __construct(protected MoneyCalculatorInterface $moneyCalculator, private float $commissionPercent)
     {
         parent::__construct($moneyCalculator);
-
-        $this->commissionPercent = (float) $_ENV['WITHDRAW_BUSINESS_ACCOUNT_COMMISSION_PERCENT'];
     }
 
     protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
@@ -34,9 +30,9 @@ class BusinessAccountWithdrawRule extends AbstractRule
 
     protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool
     {
-        return (
+        return
             $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() === TransactionTypeEnum::Withdraw
             && $userHistoryUpToCurrentTransaction->getLastTransaction()->getAccountTypeEnum() === AccountTypeEnum::Business
-        );
+        ;
     }
 }

@@ -17,7 +17,8 @@ class CurrencyExchangeService implements CurrencyExchangeServiceInterface
 
     public function __construct(
         private ExchangeRatesHttpInterface $exchangeRatesHttp,
-        private MoneyCalculatorInterface $moneyCalculator
+        private MoneyCalculatorInterface $moneyCalculator,
+        private string $defaultCurrency,
     ) {
     }
 
@@ -46,7 +47,7 @@ class CurrencyExchangeService implements CurrencyExchangeServiceInterface
 
     public function convertMoneyToDefaultCurrency(Money $money): Money
     {
-        return $this->convertMoney($money, CurrencyEnum::getDefaultCurrency());
+        return $this->convertMoney($money, CurrencyEnum::from($this->defaultCurrency));
     }
 
     private function checkExchangeRateExistence(ExchangeRatesResponseDTO $exchangeRatesResponseDTO, CurrencyEnum $currencyEnum): void

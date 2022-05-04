@@ -11,33 +11,32 @@ use App\Service\CommissionRulesChain\CommissionRulesFacadeInterface;
 use App\Service\CommissionRulesChain\DepositChain\DefaultDepositRule;
 use App\Service\CommissionRulesChain\WithdrawChain\BusinessAccountWithdrawRule;
 use App\Service\CommissionRulesChain\WithdrawChain\PrivateAccountWithdrawRule;
-use App\Service\CurrencyExchangeServiceInterface;
-use App\Service\MoneyCalculator\MoneyCalculatorInterface;
 
 class CommissionRulesFacadeFactory
 {
-    private static CommissionRulesFacade $commissionRulesFacade;
+    private CommissionRulesFacade $commissionRulesFacade;
 
     public function __construct(
-        private MoneyCalculatorInterface $moneyCalculator,
-        private CurrencyExchangeServiceInterface $currencyExchangeService
+        private DefaultDepositRule $defaultDepositRule,
+        private PrivateAccountWithdrawRule $privateAccountWithdrawRule,
+        private BusinessAccountWithdrawRule $businessAccountWithdrawRule,
     ) {
     }
 
     public function makeCommissionRulesFacade(): CommissionRulesFacadeInterface
     {
-        if (empty(self::$commissionRulesFacade)) {
-            self::$commissionRulesFacade = new CommissionRulesFacade([
+        if (empty($this->commissionRulesFacade)) {
+            $this->commissionRulesFacade = new CommissionRulesFacade([
                 TransactionTypeEnum::Deposit->value => new CommissionRulesChain(
-                    new DefaultDepositRule($this->moneyCalculator)
+                    $this->defaultDepositRule
                 ),
                 TransactionTypeEnum::Withdraw->value => new CommissionRulesChain(
-                    (new PrivateAccountWithdrawRule($this->moneyCalculator, $this->currencyExchangeService))
-                        ->setNextRule(new BusinessAccountWithdrawRule($this->moneyCalculator))
+                    $this->privateAccountWithdrawRule
+                        ->setNextRule($this->businessAccountWithdrawRule)
                 ),
             ]);
         }
 
-        return self::$commissionRulesFacade;
+        return $this->commissionRulesFacade;
     }
 }

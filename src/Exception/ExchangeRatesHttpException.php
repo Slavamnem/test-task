@@ -10,6 +10,6 @@ class ExchangeRatesHttpException extends \Exception
 
     public function __construct($message = '')
     {
-        parent::__construct(self::BASE_MESSAGE . $message);
+        parent::__construct(self::BASE_MESSAGE.$message);
     }
 }

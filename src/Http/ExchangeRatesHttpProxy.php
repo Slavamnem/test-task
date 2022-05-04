@@ -8,7 +8,7 @@ use App\DTO\ExchangeRatesResponseDTO;
 
 class ExchangeRatesHttpProxy implements ExchangeRatesHttpInterface
 {
-    private static $cachedExchangeRatesResponse;
+    private ExchangeRatesResponseDTO $cachedExchangeRatesResponseDTO;
 
     public function __construct(private ExchangeRatesHttp $exchangeRatesHttp)
     {
@@ -16,10 +16,10 @@ class ExchangeRatesHttpProxy implements ExchangeRatesHttpInterface
 
     public function getCurrentExchangeRates(): ExchangeRatesResponseDTO
     {
-        if (empty(self::$cachedExchangeRatesResponse)) {
-            self::$cachedExchangeRatesResponse = $this->exchangeRatesHttp->getCurrentExchangeRates();
+        if (empty($this->cachedExchangeRatesResponseDTO)) {
+            $this->cachedExchangeRatesResponseDTO = $this->exchangeRatesHttp->getCurrentExchangeRates();
         }
 
-        return self::$cachedExchangeRatesResponse;
+        return $this->cachedExchangeRatesResponseDTO;
     }
 }

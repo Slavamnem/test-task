@@ -6,16 +6,21 @@ namespace App\Service\TransactionReader;
 
 use App\Collection\TransactionsCollection;
 use App\DTO\SourceFileLineDTO;
-use App\DTO\TransactionReaderRequest\AbstractTransactionReaderRequestDTO;
+use App\DTO\TransactionReaderRequestDTO;
 use App\Exception\NotFoundTransactionsFileException;
 use App\Factory\TransactionDTOFactory;
-use App\Helper\ValidationHelper;
+use App\Service\ValidationServiceInterface;
 
 class TransactionFileReader implements TransactionReaderInterface
 {
-    public function readTransactions(AbstractTransactionReaderRequestDTO $requestDTO): \Generator
+    public function __construct(
+        private ValidationServiceInterface $validationService,
+        private TransactionDTOFactory $transactionDTOFactory,
+    ) {
+    }
+
+    public function readTransactions(TransactionReaderRequestDTO $requestDTO): \Generator
     {
-//        $startTime = microtime(true);
         $sourceFile = fopen($requestDTO->getTransactionsFilePath(), 'r');
 
         if (!$sourceFile) {
@@ -33,7 +38,8 @@ class TransactionFileReader implements TransactionReaderInterface
                 (float) $sourceFileLine[4],
                 $sourceFileLine[5]
             );
-            ValidationHelper::validateAndThrowException($sourceFileLineDTO);
+
+            $this->validationService->validateAndThrowException($sourceFileLineDTO);
 
             //For each transaction, I read the file again to get the current transaction's user history, ignoring other transactions.
             //This keeps the memory from overflowing.
@@ -43,11 +49,10 @@ class TransactionFileReader implements TransactionReaderInterface
                 $currentFileLine
             );
 
-            $currentFileLine++;
+            ++$currentFileLine;
         }
 
         fclose($sourceFile);
-//        dd('Speed: ' . microtime(true) - $startTime);
     }
 
     public function getUserHistoryUpToCurrentTransaction(
@@ -72,19 +77,19 @@ class TransactionFileReader implements TransactionReaderInterface
             );
 
             if ($sourceFileLineDTO->getUserId() !== $currentTransactionUserId) {
-                $fileLine++;
+                ++$fileLine;
                 continue;
             }
 
             $userHistoryUpToCurrentTransaction->addTransaction(
-                TransactionDTOFactory::createTransactionDTOFromSourceFileLineDTO($sourceFileLineDTO)
+                $this->transactionDTOFactory->createTransactionDTOFromSourceFileLineDTO($sourceFileLineDTO)
             );
 
             if ($fileLine === $currentTransactionLine) {
                 break;
             }
 
-            $fileLine++;
+            ++$fileLine;
         }
 
         fclose($transactionsFile);

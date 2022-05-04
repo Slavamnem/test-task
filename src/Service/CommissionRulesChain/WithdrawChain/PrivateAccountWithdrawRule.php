@@ -15,19 +15,15 @@ use App\VO\Money;
 
 class PrivateAccountWithdrawRule extends AbstractRule
 {
-    private int $freeTransactionPerWeek;
-    private float $commissionPercent;
-    private int $freeSum;
-
     public function __construct(
         protected MoneyCalculatorInterface $moneyCalculator,
-        private CurrencyExchangeServiceInterface $currencyExchangeService
+        private CurrencyExchangeServiceInterface $currencyExchangeService,
+        private string $defaultCurrency,
+        private int $freeTransactionPerWeek,
+        private float $commissionPercent,
+        private float $freeSum,
     ) {
         parent::__construct($moneyCalculator);
-
-        $this->freeTransactionPerWeek = (int) $_ENV['WITHDRAW_PRIVATE_ACCOUNT_FREE_TRANSACTIONS_PER_WEEK'];
-        $this->commissionPercent = (float) $_ENV['WITHDRAW_PRIVATE_ACCOUNT_COMMISSION_PERCENT'];
-        $this->freeSum = (int) $_ENV['WITHDRAW_PRIVATE_ACCOUNT_FREE_SUM'];
     }
 
     protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money
@@ -53,7 +49,7 @@ class PrivateAccountWithdrawRule extends AbstractRule
             ->getAllUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency($allUserWithdrawsForLastTransactionWeek);
 
         $remainingWithoutCommissionMoneyInDefaultCurrency = $this->moneyCalculator->minus(
-            (new Money($this->freeSum, CurrencyEnum::getDefaultCurrency())),
+            (new Money($this->freeSum, CurrencyEnum::from($this->defaultCurrency))),
             $this->moneyCalculator->minus(
                 $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency,
                 $lastTransactionMoneyInDefaultCurrency
@@ -78,16 +74,16 @@ class PrivateAccountWithdrawRule extends AbstractRule
 
     protected function isAppropriateRule(TransactionsCollection $userHistoryUpToCurrentTransaction): bool
     {
-        return (
+        return
             $userHistoryUpToCurrentTransaction->getLastTransaction()->getTransactionTypeEnum() === TransactionTypeEnum::Withdraw
             && $userHistoryUpToCurrentTransaction->getLastTransaction()->getAccountTypeEnum() === AccountTypeEnum::Private
-        );
+        ;
     }
 
     private function getAllUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency(
         TransactionsCollection $allUserWithdrawsForLastTransactionWeek
     ): Money {
-        $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = new Money(0.0, CurrencyEnum::getDefaultCurrency());
+        $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = new Money(0.0, CurrencyEnum::from($this->defaultCurrency));
 
         foreach ($allUserWithdrawsForLastTransactionWeek->getTransactions() as $transactionDTO) {
             $allUserWithdrawsForLastTransactionWeekMoneyInDefaultCurrency = $this->moneyCalculator->add(

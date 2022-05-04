@@ -12,13 +12,9 @@ use App\VO\Money;
 
 class DefaultDepositRule extends AbstractRule
 {
-    private float $commissionPercent;
-
-    public function __construct(protected MoneyCalculatorInterface $moneyCalculator)
+    public function __construct(protected MoneyCalculatorInterface $moneyCalculator, private float $commissionPercent)
     {
         parent::__construct($moneyCalculator);
-
-        $this->commissionPercent = (float) $_ENV['DEPOSIT_COMMISSION_PERCENT'];
     }
 
     protected function getLastUserTransactionCommission(TransactionsCollection $userHistoryUpToCurrentTransaction): Money

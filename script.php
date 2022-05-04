@@ -5,16 +5,16 @@ declare(strict_types=1);
 require 'vendor/autoload.php';
 
 use App\AppKernel;
+use App\DTO\TransactionReaderRequestDTO;
+use App\Service\CommissionCalculationService;
+use App\Service\CommissionCalculationServiceInterface;
 use App\Service\TransactionReader\TransactionFileReader;
 use App\Service\TransactionReader\TransactionReaderInterface;
-use App\DTO\TransactionReaderRequest\TransactionFileReaderRequestDTO;
-use App\Service\CommissionCalculationServiceInterface;
-use App\Service\CommissionCalculationService;
+use App\VO\Money;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Dotenv\Dotenv;
-use App\VO\Money;
 
-$container = initializeContainer($argv);
+$container = initializeContainer();
 
 try {
     /** @var TransactionReaderInterface $transactionFileReader */
@@ -22,7 +22,7 @@ try {
     /** @var CommissionCalculationServiceInterface $commissionCalculationService */
     $commissionCalculationService = $container->get(CommissionCalculationService::class);
 
-    foreach ($transactionFileReader->readTransactions(new TransactionFileReaderRequestDTO($argv[1])) as $userHistoryUpToCurrentTransaction) {
+    foreach ($transactionFileReader->readTransactions(new TransactionReaderRequestDTO($argv[1])) as $userHistoryUpToCurrentTransaction) {
         $transactionCommission = $commissionCalculationService->calculateCommission($userHistoryUpToCurrentTransaction);
 
         echo(getCommissionOutputFormat($transactionCommission));
@@ -31,11 +31,11 @@ try {
     echo($exception->getMessage() . PHP_EOL);
 }
 
-function initializeContainer($argv): ContainerInterface
+function initializeContainer(): ContainerInterface
 {
     error_reporting(0);
-    (new Dotenv())->bootEnv('.env');
-    $kernel = new AppKernel($argv[2] ?: $_ENV['ENV'], (bool)$_ENV['DEBUG']);
+    (new Dotenv())->bootEnv('.env', '.env.dist');
+    $kernel = new AppKernel($_ENV['ENV'], (bool)$_ENV['DEBUG']);
     $kernel->boot();
     return $kernel->getContainer();
 }

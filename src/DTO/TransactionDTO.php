@@ -7,12 +7,12 @@ namespace App\DTO;
 use App\Enum\AccountTypeEnum;
 use App\Enum\TransactionTypeEnum;
 use App\VO\Money;
-use DateTime;
+use DateTimeInterface;
 
 class TransactionDTO
 {
     public function __construct(
-        private DateTime $date,
+        private DateTimeInterface $date,
         private int $userId,
         private AccountTypeEnum $accountTypeEnum,
         private TransactionTypeEnum $transactionTypeEnum,
@@ -20,7 +20,7 @@ class TransactionDTO
     ) {
     }
 
-    public function getDate(): DateTime
+    public function getDate(): DateTimeInterface
     {
         return $this->date;
     }
