@@ -5,6 +5,7 @@ Documentation
     - composer
 2) Run program:
     - composer install
+    - cp .env.dist .env
     - php script.php input.csv
 
 3) Run test:

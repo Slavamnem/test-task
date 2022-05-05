@@ -20,7 +20,6 @@ services:
 
   App\Service\MoneyCalculator\MoneyCalculatorInterface: '@App\Service\MoneyCalculator\MoneyBCMathCalculator'
   App\Service\MoneyCalculator\MoneyBCMathCalculator:
-    public: true
     arguments:
       $precision: '%env(MONEY_PRECISION)%'
 
@@ -30,17 +29,14 @@ services:
       $exchangeRatesApiUrl: '%env(EXCHANGE_RATES_API_URL)%'
 
   App\Service\CommissionRulesChain\DepositChain\DefaultDepositRule:
-    public: public
     arguments:
       $commissionPercent: '%env(DEPOSIT_COMMISSION_PERCENT)%'
 
   App\Service\CommissionRulesChain\WithdrawChain\BusinessAccountWithdrawRule:
-    public: true
     arguments:
       $commissionPercent: '%env(WITHDRAW_BUSINESS_ACCOUNT_COMMISSION_PERCENT)%'
 
   App\Service\CommissionRulesChain\WithdrawChain\PrivateAccountWithdrawRule:
-    public: true
     arguments:
       $freeTransactionPerWeek: '%env(WITHDRAW_PRIVATE_ACCOUNT_FREE_TRANSACTIONS_PER_WEEK)%'
       $commissionPercent: '%env(WITHDRAW_PRIVATE_ACCOUNT_COMMISSION_PERCENT)%'
