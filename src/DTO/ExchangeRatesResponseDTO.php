@@ -20,11 +20,6 @@ class ExchangeRatesResponseDTO
         return $this->date;
     }
 
-    public function getRates(): array
-    {
-        return $this->rates;
-    }
-
     public function hasRate(string $currencyCode): bool
     {
         return !empty($this->rates[$currencyCode]);

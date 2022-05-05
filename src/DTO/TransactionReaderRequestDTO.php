@@ -6,11 +6,11 @@ namespace App\DTO;
 
 class TransactionReaderRequestDTO
 {
-    public function __construct(private string|null $transactionsFilePath)
+    public function __construct(private string $transactionsFilePath)
     {
     }
 
-    public function getTransactionsFilePath(): ?string
+    public function getTransactionsFilePath(): string
     {
         return $this->transactionsFilePath;
     }
