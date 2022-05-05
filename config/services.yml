@@ -1,0 +1,43 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    bind:
+      $defaultCurrency: '%env(DEFAULT_CURRENCY)%'
+
+  App\:
+    resource: '../src/*/*'
+
+  Symfony\Component\Console\Application:
+    # why public? so we can get it from container in bin file
+    # via "$container->get(Application::class)"
+    public: true
+
+  App\Service\CommissionCalculationService:
+    public: true
+  App\Service\TransactionReader\TransactionFileReader:
+    public: true
+
+  App\Service\MoneyCalculator\MoneyCalculatorInterface: '@App\Service\MoneyCalculator\MoneyBCMathCalculator'
+  App\Service\MoneyCalculator\MoneyBCMathCalculator:
+    arguments:
+      $precision: '%env(MONEY_PRECISION)%'
+
+  App\Http\ExchangeRatesHttpInterface: '@App\Http\ExchangeRatesHttpProxy'
+  App\Http\ExchangeRatesHttp:
+    arguments:
+      $exchangeRatesApiUrl: '%env(EXCHANGE_RATES_API_URL)%'
+
+  App\Service\CommissionRulesChain\DepositChain\DefaultDepositRule:
+    arguments:
+      $commissionPercent: '%env(DEPOSIT_COMMISSION_PERCENT)%'
+
+  App\Service\CommissionRulesChain\WithdrawChain\BusinessAccountWithdrawRule:
+    arguments:
+      $commissionPercent: '%env(WITHDRAW_BUSINESS_ACCOUNT_COMMISSION_PERCENT)%'
+
+  App\Service\CommissionRulesChain\WithdrawChain\PrivateAccountWithdrawRule:
+    arguments:
+      $freeTransactionPerWeek: '%env(WITHDRAW_PRIVATE_ACCOUNT_FREE_TRANSACTIONS_PER_WEEK)%'
+      $commissionPercent: '%env(WITHDRAW_PRIVATE_ACCOUNT_COMMISSION_PERCENT)%'
+      $freeSum: '%env(WITHDRAW_PRIVATE_ACCOUNT_FREE_SUM)%'
